@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TechMart - Categories</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .brand-logo {
+            font-size: 2.4em;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .brand-logo:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .nav-categories {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .nav-category {
+            padding: 10px 20px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            cursor: pointer;
+            white-space: nowrap;
+            text-align: center;
+        }
+        
+        .nav-category:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-category:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-item {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding-left: 25px;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-left: auto;
+            justify-content: flex-end;
+        }
+        
+        .nav-btn {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        
+        .nav-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+        
+        .logout-btn {
+            background: linear-gradient(135deg, #6f42c1, #ee5a24);
+        }
+
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #6f42c1, #ee5a24) !important;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, #6f42c1, #41a5f7);
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(135deg, #6f42c1, #41a5f7) !important;
+            box-shadow: 0 5px 15px rgba(65, 165, 247, 0.4);
+        }
+        
+        .database-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .database-btn {
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0 !important;
+            font-size: 1em !important;
+        }
+        .dropdown-content a {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            border-radius: 0;
+        }
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        .dropdown-content a:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding-left: 25px;
+        }
+        .database-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .search-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .main-content {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 60px;
+            color: white;
+        }
+        
+        .welcome-title {
+            font-size: 3em;
+            font-weight: 300;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .nav-categories {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .dropdown {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                margin-top: 10px;
+                box-shadow: none;
+                background: rgba(102, 126, 234, 0.1);
+            }
+            
+            .welcome-title {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="brand">
+                    <a href="{% url 'home' %}" class="brand-logo">TechMart</a>
+                </div>
+                
+                <div class="nav-categories">
+                    {% for category in categories %}
+                        <div class="nav-category">
+                            <a href="{% url 'product_list_by_category' category.id %}" style="text-decoration: none; color: inherit;">
+                                {{ category.name }}
+                            </a>
+                            {% if category.subcategories.all %}
+                                <div class="dropdown">
+                                    {% for subcategory in category.subcategories.all %}
+                                        <a href="{% url 'product_list_by_category' subcategory.id %}" class="dropdown-item">
+                                            {{ subcategory.name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="nav-actions">
+                                {% if request.session.is_admin %}
+                    <div class="database-dropdown">
+                        <button class="nav-btn database-btn" style="background: #6f42c1;">🗄️ Database ▼</button>
+                        <div class="dropdown-content">
+                            <a href="{% url 'add_product' %}">➕ Add Product</a>
+                            <a href="{% url 'orders_database' %}">📋 Orders Placed</a>
+                        </div>
+                    </div>
+                {% endif %}
+                <a href="{% url 'cart_detail' %}" class="nav-btn" style="background: none; border: none; font-size: 1.5em; padding: 5px 10px;">🛒</a>
+                {% if request.session.is_admin or request.session.is_logged_in %}
+                    <a href="{% url 'order_history' %}" class="nav-btn" style="background: none; border: none; font-size: 1.5em; padding: 5px 10px;">👤</a>
+                    <a href="{% url 'logout' %}" class="nav-btn logout-btn">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-btn login-btn">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <div class="search-container">
+        <form method="GET" action="{% url 'search_products' %}" class="search-form">
+            <input type="text" name="q" placeholder="Search for products..." class="search-input" required>
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+    
+    <div class="main-content">
+        <div class="welcome-section">
+            <h1 class="welcome-title">Welcome to TechMart</h1>
+            <p class="welcome-subtitle">Discover the latest in technology and gadgets. Browse our curated collection of premium tech accessories and find exactly what you need.</p>
+        </div>
+    </div>
+</body>
+</html> 

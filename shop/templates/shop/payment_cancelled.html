@@ -1,0 +1,47 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Payment Cancelled - TechMart{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="payment-container">
+        <div style="text-align: center; padding: 40px;">
+            <div style="font-size: 4em; margin-bottom: 20px;">⚠️</div>
+            <h1 style="color: #ffc107; margin-bottom: 20px;">Payment Cancelled</h1>
+            <p style="color: #666; margin-bottom: 30px; font-size: 1.1em;">{{ message }}</p>
+            {% if details %}
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <p style="margin: 0; color: #666;">{{ details }}</p>
+            </div>
+            {% endif %}
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'payment' %}" class="btn btn-primary" style="
+                    padding: 12px 24px;
+                    background: #007bff;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 25px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                ">Try Again</a>
+                <a href="{% url 'cart_detail' %}" class="btn btn-secondary" style="
+                    padding: 12px 24px;
+                    background: #6c757d;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 25px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                ">Back to Cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %} 

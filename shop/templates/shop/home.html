@@ -1,0 +1,565 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}TechMart - Your Tech Destination{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background:rgb(255, 255, 255);
+        padding: 80px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 80px;
+        align-items: center;
+        min-height: 600px;
+    }
+
+    .hero-text {
+        text-align: left;
+    }
+
+    .hero-title {
+        font-size: 3.5em;
+        font-weight: 800;
+        color:rgb(254, 251, 255);
+        margin-bottom: 24px;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25em;
+        color: #666;
+        margin-bottom: 40px;
+        line-height: 1.6;
+        font-weight: 400;
+    }
+
+    .cta-section {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+
+    .phone-input {
+        flex: 1;
+        padding: 16px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 16px;
+        font-family: 'Inter', sans-serif;
+        background: white;
+        transition: all 0.3s ease;
+        max-width: 300px;
+    }
+
+    .phone-input:focus {
+        outline: none;
+        border-color: #1a1a1a;
+        box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+    }
+
+    .cta-button {
+        padding: 16px 32px;
+        background: #1a1a1a;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+        white-space: nowrap;
+    }
+
+    .cta-button:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .hero-visual {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .phone-mockup {
+        width: 280px;
+        height: 560px;
+        background: #1a1a1a;
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        position: relative;
+        transform: rotate(-5deg);
+    }
+
+    .phone-screen {
+        width: 100%;
+        height: 100%;
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .phone-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .phone-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .app-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .app-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .app-amount {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    .app-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .app-card {
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #f0f0f0;
+    }
+
+    .app-card-title {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 4px;
+    }
+
+    .app-card-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+
+    .card-mockup {
+        width: 200px;
+        height: 120px;
+        background: linear-gradient(135deg,rgb(44, 44, 44),rgb(26, 26, 26));
+        border-radius: 12px;
+        position: absolute;
+        right: -40px;
+        top: 50%;
+        transform: translateY(-50%) rotate(15deg);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .features-section {
+        padding: 80px 0;
+        background: white;
+    }
+
+    .features-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        margin-top: 60px;
+    }
+
+    .feature-card {
+        background: #fafafa;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .feature-icon {
+        font-size: 3em;
+        margin-bottom: 24px;
+    }
+
+    .feature-title {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 16px;
+    }
+
+    .feature-description {
+        color: #666;
+        line-height: 1.6;
+        font-size: 16px;
+    }
+
+    .products-section {
+        padding: 80px 0;
+        background: #fafafa;
+    }
+
+    .products-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    .section-title {
+        font-size: 2.5em;
+        font-weight: 800;
+        color: #1a1a1a;
+        text-align: center;
+        margin-bottom: 16px;
+        letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+        font-size: 1.1em;
+        color: #666;
+        text-align: center;
+        margin-bottom: 60px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 32px;
+        margin-top: 40px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        font-size: 3em;
+    }
+
+    .product-info {
+        padding: 24px;
+    }
+
+    .product-name {
+        font-size: 1.1em;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .product-price {
+        font-size: 1.2em;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 16px;
+    }
+
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 12px;
+        background: #1a1a1a;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .add-to-cart-btn:hover {
+        background: #000;
+        transform: translateY(-2px);
+    }
+
+    .view-all-btn {
+        display: block;
+        width: fit-content;
+        margin: 60px auto 0;
+        padding: 16px 32px;
+        background: #1a1a1a;
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .view-all-btn:hover {
+        background: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    @media (max-width: 768px) {
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 40px;
+            text-align: center;
+        }
+
+        .hero-text {
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 2.5em;
+        }
+
+        .cta-section {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .phone-input {
+            max-width: none;
+        }
+
+        .phone-mockup {
+            width: 240px;
+            height: 480px;
+        }
+
+        .card-mockup {
+            width: 160px;
+            height: 96px;
+            right: -20px;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1 class="hero-title">Authentic Products, Excellent Quality</h1>
+            <p class="hero-subtitle">
+                Discover the latest technology products and gadgets. From smartphones to smart home devices, 
+                we have everything you need to stay connected and productive.
+            </p>
+            <div class="cta-section">
+                <input type="tel" class="phone-input" placeholder="Enter your mobile number" />
+                <button class="cta-button">Get Started</button>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <div class="phone-header">
+                        <span>TechMart</span>
+                        <span>📶 🔋</span>
+                    </div>
+                    <div class="phone-content">
+                        <div class="app-section">
+                            <div class="app-title">8/7/2025</div>
+                            <div class="app-amount">12:30</div>
+                            <button style="background: #1a1a1a; color: white; border: none; border-radius: 8px; padding: 8px 16px; margin-top: 8px; font-size: 12px;">+ Add Money</button>
+                        </div>
+                        <div class="app-grid">
+                            <div class="app-card">
+                                <div class="app-card-title">Savings Pods</div>
+                                <div class="app-card-value">OMR 500.00</div>
+                                <div style="font-size: 10px; color: #28a745;">4.00%</div>
+                            </div>
+                            <div class="app-card">
+                                <div class="app-card-title">Credit Journey</div>
+                                <div class="app-card-value">653</div>
+                                <div style="font-size: 10px; color: #28a745;">↑ 14</div>
+                            </div>
+                            <div class="app-card">
+                                <div class="app-card-title">Points</div>
+                                <div class="app-card-value">340</div>
+                            </div>
+                            <div class="app-card">
+                                <div class="app-card-title">Crypto</div>
+                                <div class="app-card-value">OMR 50.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-mockup">
+                VISA CREDIT
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features-section">
+    <div class="features-container">
+        <h2 class="section-title">Why Choose TechMart?</h2>
+        <p class="section-subtitle">
+            We provide the best technology products with exceptional service and competitive prices
+        </p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚚</div>
+                <h3 class="feature-title">Fast Delivery</h3>
+                <p class="feature-description">
+                    Get your products delivered to your doorstep within 24-48 hours across Oman
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">Secure Payments</h3>
+                <p class="feature-description">
+                    Multiple secure payment options including Thawani Pay, cash on delivery, and more
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💎</div>
+                <h3 class="feature-title">Quality Products</h3>
+                <p class="feature-description">
+                    All products are authentic and come with manufacturer warranty
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="products-section">
+    <div class="products-container">
+        <h2 class="section-title">Featured Products</h2>
+        <p class="section-subtitle">
+            Discover our most popular technology products and gadgets
+        </p>
+        <div class="products-grid">
+            {% for product in products|slice:":6" %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        📱
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <div class="product-price">OMR {{ product.price }}</div>
+                    <button class="add-to-cart-btn" onclick="addToCart({{ product.id }})">Add to Cart</button>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #666;">
+                <h3>No products available</h3>
+                <p>Add some products first</p>
+            </div>
+            {% endfor %}
+        </div>
+        <a href="{% url 'all_products' %}" class="view-all-btn">View All Products</a>
+    </div>
+</section>
+
+<script>
+function addToCart(productId) {
+    fetch('/add-to-cart/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: 1
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Product added to cart!');
+        } else {
+            alert('Error adding product to cart');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding product to cart');
+    });
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Product - TechMart</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 40px auto;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 800px;
+        }
+        
+        .form-title {
+            font-size: 2.2em;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .submit-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .cancel-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .cancel-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="form-container">
+            <div class="form-title">Add New Product</div>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="name">Product Name:</label>
+                    <input type="text" name="name" id="name" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea name="description" id="description" class="form-control" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">Price (OMR):</label>
+                    <input type="number" name="price" id="price" class="form-control" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <select name="category" id="category" class="form-control" required>
+                        <option value="">Select a category</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image_url">Image URL:</label>
+                    <input type="url" name="image_url" id="image_url" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="about_product">About Product:</label>
+                    <textarea name="about_product" id="about_product" class="form-control" rows="4" placeholder="Detailed description about the product..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="key_features">Key Features:</label>
+                    <textarea name="key_features" id="key_features" class="form-control" rows="6" placeholder="Enter key features (one per line):&#10;• High-quality materials&#10;• Modern design&#10;• Durable construction&#10;• User-friendly interface"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="specifications">Specifications:</label>
+                    <textarea name="specifications" id="specifications" class="form-control" rows="6" placeholder="Enter specifications (format: Label: Value):&#10;Brand: TechMart&#10;Warranty: 1 Year&#10;Connectivity: USB-C&#10;Weight: 1.2kg"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="brand">Brand:</label>
+                    <input type="text" name="brand" id="brand" class="form-control" placeholder="Brand name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="warranty">Warranty:</label>
+                    <input type="text" name="warranty" id="warranty" class="form-control" placeholder="Warranty information">
+                </div>
+                
+                <div class="form-group">
+                    <label for="availability">Availability:</label>
+                    <input type="text" name="availability" id="availability" class="form-control" placeholder="Stock status">
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px;">
+                    <button type="submit" class="submit-btn">Add Product</button>
+                    <a href="{% url 'home' %}" class="cancel-btn">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html> 

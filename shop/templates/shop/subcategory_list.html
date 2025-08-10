@@ -1,0 +1,137 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}{{ category.name }} - TechMart{% endblock %}
+
+{% block extra_css %}
+        .main-content {
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .back-btn:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+        
+        .category-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .category-title {
+            font-size: 2.5em;
+            font-weight: 300;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .category-subtitle {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0;
+        }
+        
+        .subcategories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .subcategory-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .subcategory-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .subcategory-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .subcategory-name {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subcategory-description {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .category-title {
+                font-size: 2em;
+            }
+            
+            .subcategories-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 20px;
+            }
+            
+            .subcategory-card {
+                padding: 30px 20px;
+            }
+            
+            .subcategory-icon {
+                font-size: 3em;
+            }
+            
+            .subcategory-name {
+                font-size: 1.5em;
+            }
+        }
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <a href="{% url 'home' %}" class="back-btn">← Back to Home</a>
+        
+        <div class="category-header">
+            <h1 class="category-title">{{ category.name }}</h1>
+            <p class="category-subtitle">Choose from our selection of {{ category.name }} subcategories</p>
+        </div>
+        
+        <div class="subcategories-grid">
+            {% for subcategory in subcategories %}
+            <a href="{% url 'product_list_by_category' subcategory.id %}" class="subcategory-card">
+                <span class="subcategory-icon">📱</span>
+                <div class="subcategory-name">{{ subcategory.name }}</div>
+                <div class="subcategory-description">Browse our {{ subcategory.name }} {{ category.name|lower }}</div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %} 

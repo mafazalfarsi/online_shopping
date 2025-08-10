@@ -1,0 +1,458 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}{{ product.name }} - TechMart{% endblock %}
+
+{% block extra_css %}
+        .search-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .product-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .product-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .product-header h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 300;
+        }
+
+        .product-content {
+            padding: 40px;
+        }
+
+        .product-main {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .product-image-section {
+            flex: 0 0 350px;
+        }
+
+        .product-info-section {
+            flex: 1;
+        }
+
+        .product-image {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .product-image img {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-details-sections {
+            border-top: 2px solid #f0f0f0;
+            padding-top: 30px;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+        }
+
+        .detail-section h3 {
+            color: #333;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .detail-section p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 1em;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            color: #666;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .features-list li:before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .spec-value {
+            color: #666;
+        }
+
+        .shipping-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .shipping-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .shipping-icon {
+            font-size: 2em;
+        }
+
+        .shipping-item strong {
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .shipping-item p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        .product-details {
+            margin-bottom: 30px;
+        }
+
+        .product-price {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .product-description {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .product-category {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .product-main {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .product-image-section {
+                flex: none;
+            }
+
+            .product-image img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .shipping-info {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+{% endblock %}
+
+{% block content %}
+    <div class="search-container">
+        <form method="GET" action="{% url 'search_products' %}" class="search-form">
+            <input type="text" name="q" placeholder="Search for products..." class="search-input" required>
+            <button type="submit" class="search-button">Search</button>
+        </form>
+    </div>
+
+    <div class="product-container">
+        <div class="product-header">
+            <h1>{{ product.name }}</h1>
+        </div>
+
+        <div class="product-content">
+            <div class="product-main">
+                <div class="product-image-section">
+            {% if product.image_url %}
+                <div class="product-image">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                </div>
+                    {% else %}
+                        <div class="product-image-placeholder">
+                            <div style="width: 300px; height: 300px; background: #f5f5f5; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 4em; color: #ccc;">📦</div>
+                        </div>
+            {% endif %}
+                </div>
+
+                <div class="product-info-section">
+            <div class="product-details">
+                <div class="product-price">OMR {{ product.price }}</div>
+                <div class="product-description">{{ product.description }}</div>
+                {% if product.category %}
+                <div class="product-category">Category: {{ product.category.name }}</div>
+                {% endif %}
+            </div>
+
+            <div class="button-group">
+                <form action="{% url 'add_to_cart' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit" class="btn btn-success">🛒 Add to Cart</button>
+                </form>
+                
+                        {% if request.session.is_admin %}
+                <a href="{% url 'edit_product' product.id %}" class="btn btn-primary">✏️ Edit Product</a>
+                {% endif %}
+                
+                        {% if product.category %}
+                <a href="{% url 'product_list_by_category' product.category.id %}" class="btn btn-secondary">← Back to Category</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-details-sections">
+                <div class="detail-section">
+                    <h3>📋 About This Product</h3>
+                    <p>{{ product.about_product|default:product.description|default:"Experience premium quality and innovative design with this exceptional product. Crafted with attention to detail and built to last, this item combines style and functionality to meet your needs." }}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>✨ Key Features</h3>
+                    {% if product.key_features %}
+                        <ul class="features-list">
+                            {% for feature in product.key_features.splitlines %}
+                                {% if feature.strip %}
+                                    <li>{{ feature.strip }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <ul class="features-list">
+                            <li>High-quality materials and construction</li>
+                            <li>Modern design and aesthetics</li>
+                            <li>Durable and long-lasting</li>
+                            <li>User-friendly and intuitive</li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <div class="detail-section">
+                    <h3>📏 Specifications</h3>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Brand:</span>
+                            <span class="spec-value">{{ product.brand|default:"TechMart" }}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Category:</span>
+                            <span class="spec-value">{{ product.category.name|default:"Electronics" }}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Warranty:</span>
+                            <span class="spec-value">{{ product.warranty|default:"1 Year" }}</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Availability:</span>
+                            <span class="spec-value">{{ product.availability|default:"In Stock" }}</span>
+                        </div>
+                        {% if specifications %}
+                            {% for spec in specifications %}
+                                <div class="spec-item">
+                                    <span class="spec-label">{{ spec.label }}:</span>
+                                    <span class="spec-value">{{ spec.value }}</span>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>🚚 Shipping & Returns</h3>
+                    <div class="shipping-info">
+                        <div class="shipping-item">
+                            <span class="shipping-icon">🚚</span>
+                            <div>
+                                <strong>Free Delivery</strong>
+                                <p>For orders over 70 OMR</p>
+                            </div>
+                        </div>
+                        <div class="shipping-item">
+                            <span class="shipping-icon">🔄</span>
+                            <div>
+                                <strong>60 Days Return</strong>
+                                <p>If goods have problems</p>
+                            </div>
+                        </div>
+                        <div class="shipping-item">
+                            <span class="shipping-icon">🔒</span>
+                            <div>
+                                <strong>Secure Payment</strong>
+                                <p>100% secure payment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

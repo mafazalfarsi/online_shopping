@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Thawani Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 50px; }
+        .btn { background: #007bff; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; margin: 10px; }
+        .result { background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Simple Thawani Test</h1>
+    
+    <button class="btn" onclick="testThawani()">Test Thawani Session Creation</button>
+    <button class="btn" onclick="testSuccess()">Test Success Endpoint</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        function testThawani() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing Thawani session creation...';
+            
+            fetch('/test-thawani-flow/')
+            .then(response => response.json())
+            .then(data => {
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>Result:</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        ${data.success ? `<p><a href="${data.checkout_url}" target="_blank">Click here to test checkout</a></p>` : ''}
+                    </div>
+                `;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<div class="result">Error: ${error.message}</div>`;
+            });
+        }
+        
+        function testSuccess() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing success endpoint...';
+            
+            fetch('/thawani/success/?session_id=TEST123&test=true')
+            .then(response => response.text())
+            .then(html => {
+                resultDiv.innerHTML = `
+                    <div class="result">
+                        <h3>Success Endpoint Test:</h3>
+                        <p>Response length: ${html.length} characters</p>
+                        <p>First 200 characters: ${html.substring(0, 200)}...</p>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `<div class="result">Error: ${error.message}</div>`;
+            });
+        }
+    </script>
+</body>
+</html> 
