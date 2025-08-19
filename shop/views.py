@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from .models import Product, Category, ProductVariant, ProductSize, Order, OrderItem, User
+from .models import Product, Category, ProductVariant, ProductSize, Order, OrderItem, User, SavedAddress, SavedPaymentMethod
 from .forms import AddProductForm, EditProductForm
 from .thawani_service import ThawaniPayService
 from decimal import Decimal
@@ -42,6 +42,8 @@ def home(request):
     products = Product.objects.all()
     # Get all top-level categories for navigation
     categories = Category.objects.filter(parent__isnull=True)
+    
+
     
     # Option 1: Get first 4 products (current)
     # top_picks = Product.objects.all()[:4]
@@ -90,18 +92,18 @@ def product_list_by_category(request, category_id):
     # Get all top-level categories for navigation
     categories = Category.objects.filter(parent__isnull=True)
     
-    # Check if this category has subcategories
-    subcategories = Category.objects.filter(parent=category)
+    # Get all products in this category and its subcategories
+    products = Product.objects.filter(category=category)
     
-    if subcategories.exists():
-        # If category has subcategories, show the subcategory page
-        context = {'category': category, 'subcategories': subcategories, 'categories': categories}
-        return render(request, 'shop/subcategory_list.html', context)
-    else:
-        # If no subcategories, show products directly
-        products = Product.objects.filter(category=category)
-        context = {'category': category, 'products': products, 'categories': categories}
-        return render(request, 'shop/product_list.html', context)
+    # Also get products from subcategories
+    subcategories = Category.objects.filter(parent=category)
+    for subcategory in subcategories:
+        subcategory_products = Product.objects.filter(category=subcategory)
+        products = products.union(subcategory_products)
+    
+    # Show products page with all products from this category and subcategories
+    context = {'category': category, 'products': products, 'categories': categories}
+    return render(request, 'shop/product_list.html', context)
 
 
 def cart_detail(request):
@@ -168,6 +170,17 @@ def checkout(request):
         request.session['next_url'] = 'checkout'
         return redirect('login')
     
+    # Get saved addresses for the user
+    username = request.session.get('username')
+    saved_addresses = []
+    categories = Category.objects.filter(parent__isnull=True)
+    
+    try:
+        user, created = User.objects.get_or_create(username=username)
+        saved_addresses = SavedAddress.objects.filter(user=user).order_by('-is_primary', '-created_at')
+    except:
+        pass
+    
     if request.method == 'POST':
         # Here you would normally save the order and user info to the database
         # For now, just store info in session and redirect
@@ -177,13 +190,18 @@ def checkout(request):
             'city': request.POST.get('city'),
             'postal_code': request.POST.get('postal_code'),
             'phone': request.POST.get('phone'),
+            'saved_address_id': request.POST.get('saved_address_id'),  # New field
         }
         # Reset order creation flags for new checkout
         request.session['order_created'] = False
         request.session['thawani_order_created'] = False
         request.session['thawani_order_id'] = None
         return redirect('payment')
-    return render(request, 'shop/checkout_form.html')
+    
+    return render(request, 'shop/checkout_form.html', {
+        'saved_addresses': saved_addresses,
+        'categories': categories
+    })
 
 def payment(request):
     # Get cart info for total display
@@ -207,7 +225,7 @@ def payment(request):
                 variant_id = int(variant_id)
                 size_id = int(size_id)
                 variant = ProductVariant.objects.get(id=variant_id)
-                size = ProductSize.objects.get(id=size_id)
+                size = ProductSize.objects.get(id=int(size_id))
                 product = variant.product
                 item_total = variant.price * quantity
                 items.append({
@@ -226,13 +244,26 @@ def payment(request):
     delivery_fee = Decimal('2.0') if total_price < Decimal('20.0') else Decimal('0.0')
     final_total = total_price + delivery_fee
     
+    # Get saved payment methods and categories
+    username = request.session.get('username')
+    saved_cards = []
+    categories = Category.objects.filter(parent__isnull=True)
+    
+    try:
+        user, created = User.objects.get_or_create(username=username)
+        saved_cards = SavedPaymentMethod.objects.filter(user=user).order_by('-is_primary', '-created_at')
+    except:
+        pass
+    
     context = {
         'cart': {
             'items': items,
             'total_price': total_price,
             'delivery_fee': delivery_fee,
             'final_total': final_total,
-        }
+        },
+        'saved_cards': saved_cards,
+        'categories': categories
     }
     return render(request, 'shop/payment.html', context)
 
@@ -286,6 +317,7 @@ def payment_direct(request):
     }
     
     return render(request, 'shop/payment_direct.html', context)
+
 
 def thawani_order_confirmation(request):
     """
@@ -479,8 +511,18 @@ def add_to_cart(request):
             # Save the updated cart to the session
             request.session['cart'] = cart
             
-            # Redirect to cart detail page
-            return redirect('cart_detail')
+            # Compute new total quantity for UI update
+            new_qty = sum(cart.values())
+            
+            # If this is an AJAX request, return JSON so the page doesn't navigate
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': True, 'cart_quantity': new_qty})
+            
+            # Non-AJAX: return to product page instead of cart
+            try:
+                return redirect('product_detail', product_id=int(product_id))
+            except Exception:
+                return redirect('home')
             
         except Product.DoesNotExist:
             return redirect('home')
@@ -702,6 +744,8 @@ def logout_view(request):
     request.session.flush()
     return redirect('home')
 
+
+
 def orders_database(request):
     # Check if user is admin
     if not request.session.get('is_admin'):
@@ -731,10 +775,21 @@ def order_history(request):
     # Get all top-level categories for navigation
     categories = Category.objects.filter(parent__isnull=True)
     
+    # Get saved addresses and payment methods
+    try:
+        user, created = User.objects.get_or_create(username=username)
+        saved_addresses = SavedAddress.objects.filter(user=user).order_by('-is_primary', '-created_at')
+        saved_cards = SavedPaymentMethod.objects.filter(user=user).order_by('-is_primary', '-created_at')
+    except:
+        saved_addresses = []
+        saved_cards = []
+    
     return render(request, 'shop/order_history.html', {
         'orders': orders,
         'categories': categories,
-        'username': username
+        'username': username,
+        'saved_addresses': saved_addresses,
+        'saved_cards': saved_cards
     })
 
 
@@ -1730,5 +1785,216 @@ def thawani_webhook(request):
             return JsonResponse({'error': f'Webhook processing error: {str(e)}'}, status=500)
     
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
+def contact(request):
+    """
+    Contact page view
+    """
+    if request.method == 'POST':
+        # Handle form submission here if needed
+        # For now, just render the page
+        pass
+    
+    return render(request, 'shop/contact.html')
+
+
+def save_address_info(request):
+    """
+    Save or update user's shipping address
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            action = data.get('action')
+            
+            # Get user from session (you might want to use proper user authentication)
+            username = request.session.get('username', 'default_user')
+            user, created = User.objects.get_or_create(username=username)
+            
+            if action == 'add':
+                # Create new address
+                address = SavedAddress.objects.create(
+                    user=user,
+                    name=data['name'],
+                    email=data['email'],
+                    phone=data['phone'],
+                    address=data['address'],
+                    city=data['city'],
+                    postal_code=data['postal_code'],
+                    is_primary=not SavedAddress.objects.filter(user=user).exists()  # First address is primary
+                )
+                message = 'Address saved successfully!'
+                
+            elif action == 'edit':
+                # Update existing address
+                address_id = data.get('id')
+                try:
+                    address = SavedAddress.objects.get(id=address_id, user=user)
+                    address.name = data['name']
+                    address.email = data['email']
+                    address.phone = data['phone']
+                    address.address = data['address']
+                    address.city = data['city']
+                    address.postal_code = data['postal_code']
+                    address.save()
+                    message = 'Address updated successfully!'
+                except SavedAddress.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': 'Address not found'})
+            
+            return JsonResponse({'success': True, 'message': message})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
+def save_payment_info(request):
+    """
+    Save or update user's payment method
+    """
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            action = data.get('action')
+            
+            # Get user from session
+            username = request.session.get('username', 'default_user')
+            user, created = User.objects.get_or_create(username=username)
+            
+            # Extract last 4 digits from card number
+            card_number = data['card_number'].replace(' ', '')  # Remove spaces
+            last_four = card_number[-4:] if len(card_number) >= 4 else card_number
+            
+            # Determine card type (simplified)
+            if card_number.startswith('4'):
+                card_type = 'visa'
+            elif card_number.startswith('5'):
+                card_type = 'mastercard'
+            elif card_number.startswith('3'):
+                card_type = 'amex'
+            else:
+                card_type = 'other'
+            
+            # Parse expiry input: support either combined 'expiry' (MM/YY) or separate fields
+            expiry_month = data.get('expiry_month')
+            expiry_year = data.get('expiry_year')
+            if not expiry_month or not expiry_year:
+                expiry_combined = data.get('expiry', '').strip()
+                if '/' in expiry_combined:
+                    mm, yy = [part.strip() for part in expiry_combined.split('/')[:2]]
+                    expiry_month = mm.zfill(2)
+                    expiry_year = yy if len(yy) == 4 else f"20{yy}"
+            
+            if action == 'add':
+                # Create new payment method
+                payment = SavedPaymentMethod.objects.create(
+                    user=user,
+                    cardholder_name=data['cardholder_name'],
+                    card_type=card_type,
+                    last_four=last_four,
+                    expiry_month=expiry_month,
+                    expiry_year=expiry_year,
+                    is_primary=not SavedPaymentMethod.objects.filter(user=user).exists()  # First card is primary
+                )
+                message = 'Payment method saved successfully!'
+                
+            elif action == 'edit':
+                # Update existing payment method
+                payment_id = data.get('id')
+                try:
+                    payment = SavedPaymentMethod.objects.get(id=payment_id, user=user)
+                    payment.cardholder_name = data['cardholder_name']
+                    payment.last_four = last_four
+                    payment.expiry_month = expiry_month
+                    payment.expiry_year = expiry_year
+                    payment.save()
+                    message = 'Payment method updated successfully!'
+                except SavedPaymentMethod.DoesNotExist:
+                    return JsonResponse({'success': False, 'message': 'Payment method not found'})
+            
+            return JsonResponse({'success': True, 'message': message})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
+def get_saved_info(request):
+    """
+    Get user's saved addresses and payment methods
+    """
+    try:
+        username = request.session.get('username', 'default_user')
+        user, created = User.objects.get_or_create(username=username)
+        
+        addresses = SavedAddress.objects.filter(user=user)
+        payment_methods = SavedPaymentMethod.objects.filter(user=user)
+        
+        data = {
+            'addresses': list(addresses.values()),
+            'payment_methods': list(payment_methods.values())
+        }
+        
+        return JsonResponse({'success': True, 'data': data})
+        
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
+
+
+def get_address_details(request, address_id):
+    """
+    Get details of a specific saved address
+    """
+    try:
+        username = request.session.get('username', 'default_user')
+        user, created = User.objects.get_or_create(username=username)
+        
+        address = SavedAddress.objects.get(id=address_id, user=user)
+        
+        data = {
+            'id': address.id,
+            'name': address.name,
+            'email': address.email,
+            'phone': address.phone,
+            'address': address.address,
+            'city': address.city,
+            'postal_code': address.postal_code
+        }
+        
+        return JsonResponse({'success': True, 'address': data})
+        
+    except SavedAddress.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Address not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
+
+
+def get_payment_details(request, payment_id):
+    """
+    Get details of a specific saved payment method (masked)
+    """
+    try:
+        username = request.session.get('username', 'default_user')
+        user, created = User.objects.get_or_create(username=username)
+        
+        pm = SavedPaymentMethod.objects.get(id=payment_id, user=user)
+        
+        data = {
+            'id': pm.id,
+            'cardholder_name': pm.cardholder_name,
+            'card_type': pm.card_type,
+            'last_four': pm.last_four,
+            'expiry_month': pm.expiry_month,
+            'expiry_year': pm.expiry_year,
+        }
+        
+        return JsonResponse({'success': True, 'payment': data})
+    except SavedPaymentMethod.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Payment method not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)})
 
 

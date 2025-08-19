@@ -98,9 +98,53 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)  # In a real app, this should be hashed
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return self.username
-    
+
+
+class SavedAddress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_addresses')
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    address = models.TextField()
+    city = models.CharField(max_length=50)
+    postal_code = models.CharField(max_length=10)
+    is_primary = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.address}, {self.city}"
+
     class Meta:
-        verbose_name_plural = "Users"
+        verbose_name_plural = "Saved Addresses"
+        ordering = ['-is_primary', '-created_at']
+
+
+class SavedPaymentMethod(models.Model):
+    CARD_TYPES = [
+        ('visa', 'Visa'),
+        ('mastercard', 'Mastercard'),
+        ('amex', 'American Express'),
+        ('discover', 'Discover'),
+        ('other', 'Other'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_payment_methods')
+    cardholder_name = models.CharField(max_length=100)
+    card_type = models.CharField(max_length=20, choices=CARD_TYPES)
+    last_four = models.CharField(max_length=4)
+    expiry_month = models.CharField(max_length=2)
+    expiry_year = models.CharField(max_length=4)
+    is_primary = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.card_type} •••• {self.last_four} - {self.cardholder_name}"
+
+    class Meta:
+        verbose_name_plural = "Saved Payment Methods"
+        ordering = ['-is_primary', '-created_at']

@@ -1,307 +1,409 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - TechMart</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+{% extends 'shop/base.html' %}
+
+{% block title %}Sign Up - TechMart{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Beams background styles */
+    #beams-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        background: #000000;
+        overflow: hidden;
+    }
+    
+    .beam {
+        position: absolute;
+        width: 400px;
+        height: 120px;
+        background: linear-gradient(45deg, 
+            rgba(139, 0, 139, 0.8), 
+            rgba(220, 20, 103, 0.9), 
+            rgba(139, 0, 139, 0.6)
+        );
+        border-radius: 60px;
+        box-shadow: 
+            0 0 30px rgba(139, 0, 139, 0.6),
+            0 0 60px rgba(220, 20, 60, 0.4),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
+        opacity: 0.85;
+        transform: none;
+        filter: blur(1px);
+        transition: none;
+    }
+
+    .signup-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 80px);
+        padding: 40px 20px;
+        background: transparent;
+        position: relative;
+        z-index: 1; /* content above beams */
+    }
+    
+    .signup-card {
+        background: rgba(6, 0, 16, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        overflow: visible;
+        width: 100%;
+        max-width: 450px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgb(78, 46, 56);
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+        
+        /* Glow effect variables */
+        --glow-x: 50%;
+        --glow-y: 50%;
+        --glow-intensity: 0;
+        --glow-radius: 200px;
+        --purple-glow: rgb(99, 0, 33);
+    }
+    
+    /* Border glow effect */
+    .signup-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 6px;
+        background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.35)) 0%,
+            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.2)) 30%,
+            transparent 60%);
+        border-radius: inherit;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 1;
+        opacity: 1;
+    }
+    
+    .signup-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+    }
+    
+    .signup-card:hover {
+        box-shadow: 0 4px 20px rgba(82, 9, 27, 0.4), 0 0 30px var(--purple-glow);
+    }
+    
+    .signup-header {
+        color: white;
+        padding: 30px;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .signup-header h1 {
+        margin: 0;
+        font-size: 2em;
+        font-weight: 300;
+    }
+    
+    .signup-header p {
+        margin: 10px 0 0 0;
+        opacity: 0.9;
+    }
+    
+    .signup-form {
+        padding: 40px;
+        position: relative;
+        z-index: 2;
+        color: white;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: white;
+        font-size: 1em;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e1e5e9;
+        background: white;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        outline: none;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .signup-btn {
+        width: 100%;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .signup-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4ba2 100%);
+    }
+    
+    .back-link {
+        display: inline-block;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+        color: #5a6fd8;
+        text-decoration: underline;
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 20px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9em;
+    }
+    
+    .login-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+    
+    .error-message {
+        background: #ff6b6b;
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 480px) {
+        .signup-card {
+            margin: 20px;
         }
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        .signup-header {
+            padding: 25px 20px;
         }
         
-        .navbar {
-            background: white;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            padding: 15px 0;
+        .signup-form {
+            padding: 30px 20px;
         }
         
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-        }
-        
-        .brand-logo {
-            font-size: 2.4em;
-            font-weight: 800;
-            text-decoration: none;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .brand-logo:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
-        }
-        
-        .login-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .login-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 450px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .login-header h1 {
-            margin: 0;
-            font-size: 2em;
-            font-weight: 300;
-        }
-        
-        .login-header p {
-            margin: 10px 0 0 0;
-            opacity: 0.9;
-        }
-        
-        .login-form {
-            padding: 40px;
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1em;
+        .signup-header h1 {
+            font-size: 1.8em;
         }
         
         .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            padding: 12px 15px;
+            font-size: 14px;
         }
         
         .signup-btn {
-            width: 100%;
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            padding: 12px 20px;
+            font-size: 14px;
         }
-        
-        .signup-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            background: linear-gradient(135deg, #5a6fd8 0%, #6a4ba2 100%);
-        }
-        
-                .login-btn {
-            background: linear-gradient(135deg, #6f42c1,rgb(65, 165, 247));
-        }
+    }
+</style>
+{% endblock %}
 
-        .login-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #41a5f7) !important;
-            box-shadow: 0 5px 15px rgba(65, 165, 247, 0.4);
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24);
-        }
-
-        .logout-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24) !important;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-        
-        .back-link {
-            display: inline-block;
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .back-link:hover {
-            color: #5a6fd8;
-            transform: translateX(-5px);
-        }
-        
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .login-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 0.9em;
-        }
-        
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-        
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #fcc;
-        }
-        
-        @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-                gap: 15px;
-                padding: 0 15px;
-            }
-            
-            .login-container {
-                margin: 40px 20px;
-                max-width: none;
-            }
-            
-            .login-form {
-                padding: 30px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .nav-container {
-                padding: 0 10px;
-            }
-            
-            .brand-logo {
-                font-size: 1.8em;
-            }
-            
-            .nav-btn {
-                padding: 8px 15px;
-                font-size: 12px;
-            }
-            
-            .login-form {
-                padding: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="brand">
-                <a href="{% url 'home' %}" class="brand-logo">TechMart</a>
-            </div>
+{% block content %}
+<div id="beams-container"></div>
+<div class="signup-container">
+    <div class="signup-card" id="signup-card">
+        <div class="signup-header">
+            <h1>👤</h1>
+            <h1>Join TechMart</h1>
+            {% if checkout_required %}
+                <p>Create your account to continue with checkout</p>
+            {% else %}
+                <p>Create your account to start shopping</p>
+            {% endif %}
         </div>
-    </nav>
-
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <h1>👤</h1>
-                <h1>Join TechMart</h1>
-                {% if checkout_required %}
-                    <p>Create your account to continue with checkout</p>
-                {% else %}
-                    <p>Create your account to start shopping</p>
-                {% endif %}
-            </div>
+        
+        <div class="signup-form">
+            <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
             
-            <div class="login-form">
-                <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
-                
-                {% if error_message %}
-                    <div class="error-message">
-                        {{ error_message }}
-                    </div>
-                {% endif %}
-                
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
-                    </div>
-                    
-                    <button type="submit" class="signup-btn">👤 Sign Up</button>
-                </form>
-                
-                <div class="login-link">
-                    <a href="{% url 'login' %}">Already have an account? Sign in</a>
+            {% if error_message %}
+                <div class="error-message">
+                    {{ error_message }}
                 </div>
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="signup-btn">👤 Sign Up</button>
+            </form>
+            
+            <div class="login-link">
+                <a href="{% url 'login' %}">Already have an account? Sign in</a>
             </div>
         </div>
     </div>
-</body>
-</html> 
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Side-stacked beams (same mechanic as contact page)
+class BeamsBackground {
+    constructor(container, options = {}) {
+        this.container = container;
+        this.options = {
+            beamsPerSide: 4,
+            dropSpeed: 0.5,
+            gapFromEdge: 30,
+        };
+        this.beams = [];
+        this.animationId = null;
+        this.lastTime = 0;
+        this.allStopped = false;
+        this.init();
+    }
+    init() { this.createBeams(); this.startAnimation(); }
+
+    createBeams() {
+        const containerWidth = this.container.offsetWidth;
+        const containerHeight = this.container.offsetHeight;
+        this.container.innerHTML = '';
+        this.beams = [];
+        const num = this.options.beamsPerSide;
+        const spacing = containerHeight / (num + 1);
+        const beamLength = 400;
+        const beamThickness = 120;
+        const leftX = this.options.gapFromEdge;
+        const rightX = containerWidth - beamLength - this.options.gapFromEdge;
+        const makeBeam = (x, targetCenterY, index, sideOffsetDelayMs) => {
+            const beam = document.createElement('div');
+            beam.className = 'beam';
+            const startY = -200;
+            const targetTop = Math.max(0, targetCenterY - (beamThickness/2));
+            const startDelay = sideOffsetDelayMs + index * 450;
+            const speed = this.options.dropSpeed;
+            beam.animationData = { x, y: startY, targetY: targetTop, startTime: Date.now() + startDelay, started: false, stopped: false, speed };
+            beam.style.left = x + 'px';
+            beam.style.top = startY + 'px';
+            this.container.appendChild(beam);
+            this.beams.push(beam);
+        };
+        for (let i = 0; i < num; i++) {
+            const centerY = spacing * (i + 1);
+            makeBeam(leftX, centerY, i, 0);
+        }
+        for (let i = 0; i < num; i++) {
+            const centerY = spacing * (i + 1);
+            makeBeam(rightX, centerY, i, 300);
+        }
+    }
+
+    startAnimation() {
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        const animate = (t) => {
+            if (!this.lastTime) this.lastTime = t;
+            const dt = t - this.lastTime; this.lastTime = t;
+            if (!this.allStopped) { this.updateBeams(dt); this.animationId = requestAnimationFrame(animate); }
+        };
+        this.animationId = requestAnimationFrame(animate);
+    }
+
+    updateBeams(deltaTime) {
+        const now = Date.now();
+        let allStopped = true;
+        this.beams.forEach((beam) => {
+            const d = beam.animationData;
+            if (d.stopped) return;
+            if (now < d.startTime) { allStopped = false; return; }
+            const distance = d.speed * deltaTime;
+            d.y += distance;
+            if (d.y >= d.targetY) { d.y = d.targetY; d.stopped = true; }
+            else { allStopped = false; }
+            beam.style.top = d.y + 'px';
+        });
+        this.allStopped = allStopped;
+        if (allStopped && this.animationId) { cancelAnimationFrame(this.animationId); this.animationId = null; }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize beams
+    const beamsContainer = document.getElementById('beams-container');
+    if (beamsContainer) {
+        try { window.signupBeams = new BeamsBackground(beamsContainer); } catch(e) { console.error(e); }
+    }
+
+    // Mouse-tracked border glow for signup card (same as login)
+    const signupCard = document.getElementById('signup-card');
+    if (signupCard) {
+        const onMove = (e) => {
+            const rect = signupCard.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            signupCard.style.setProperty('--glow-x', `${x}%`);
+            signupCard.style.setProperty('--glow-y', `${y}%`);
+            signupCard.style.setProperty('--glow-intensity', '1');
+        };
+        const onLeave = () => signupCard.style.setProperty('--glow-intensity', '0');
+        signupCard.addEventListener('mousemove', onMove);
+        signupCard.addEventListener('mouseleave', onLeave);
+    }
+});
+</script>
+{% endblock %}

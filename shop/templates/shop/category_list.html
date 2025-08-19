@@ -1,405 +1,1443 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>TechMart - Categories</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
-        
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        
-        .nav-container {
-            max-width: 1400px;
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}TechMart - Categories{% endblock %}
+
+{% block content %}
+<!-- Categories Page with Magic Bento -->
+<div class="categories-page">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Shop by Category</h1>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-section">
+            <form method="GET" action="{% url 'search_products' %}" class="form" novalidate>
+                <button type="submit" aria-label="Search">
+                    <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
+                        <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </button>
+                <input class="input" name="q" placeholder="Search for products..." type="text">
+                <button class="reset" type="reset" aria-label="Clear">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+
+        <!-- Magic Bento Categories Grid -->
+        <div id="magic-bento-container"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Override base background for categories page */
+    html, body {
+        background: #000000 !important;
+        background-color: #000000 !important;
+    }
+    
+    /* Force black background on all elements */
+    * {
+        background-color: #000000 !important;
+    }
+    
+    .categories-page {
+        background: #000000 !important;
+        background-color: #000000 !important;
+        padding: 20px 0;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .page-subtitle {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 600px;
+        margin: 0 auto;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Search Section */
+    .search-section {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Uiverse search - burgundy theme */
+    .form button { border: none; background: none; color: #8b8ba7; }
+    .form {
+      --timing: 0.3s;
+      --width-of-input: 500px;
+      --height-of-input: 48px;
+      --border-height: 2px;
+      --input-bg: rgba(0,0,0,0.5);
+      --border-color: rgb(112, 0, 28);
+      --border-radius: 30px;
+      --after-border-radius: 10px;
+      position: relative;
+      width: var(--width-of-input);
+      height: var(--height-of-input);
+      display: flex;
+      align-items: center;
+      padding-inline: 0.8em;
+      border-radius: var(--border-radius);
+      transition: border-radius 0.5s ease;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(139,0,46,0.25) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .input {
+      font-size: 1rem;
+      background-color: transparent;
+      width: 100%;
+      height: 100%;
+      padding-inline: 0.5em;
+      padding-block: 0.7em;
+      border: none;
+      color: #fff;
+    }
+    .input::placeholder { color: rgba(255,255,255,0.8); }
+    .form:before {
+      content: ""; position: absolute; background: var(--border-color);
+      transform: scaleX(0); transform-origin: center; width: 100%;
+      height: var(--border-height); left: 0; bottom: 0; border-radius: 1px;
+      transition: transform var(--timing) ease;
+    }
+    .form:focus-within { border-radius: var(--after-border-radius); }
+    .form:focus-within:before { transform: scale(1); }
+    .reset { border: none; background: none; opacity: 0; visibility: hidden; color:#fff; }
+    .form input:not(:placeholder-shown) ~ .reset { opacity: 1; visibility: visible; }
+    .form svg { width: 17px; margin-top: 3px; color:#fff; }
+    /* remove focus outline and bottom border on focus */
+    .form:before { display:none !important; }
+    .form:focus-within:before { display:none !important; }
+    .form, .form * { outline: none !important; box-shadow: none !important; }
+
+    /* Magic Bento Container */
+    #magic-bento-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 600px;
+    }
+
+    /* Magic Bento CSS Variables */
+    :root {
+        --hue: 27;
+        --sat: 69%;
+        --white: hsl(0, 0%, 100%);
+        --purple-primary: rgb(109, 7, 41);
+        --purple-glow: rgb(99, 0, 33);
+        --purple-border: rgb(192, 55, 85);
+        --border-color:rgb(78, 46, 56);
+        --background-dark: #060010;
+        color-scheme: light dark;
+    }
+
+    .card-grid {
+        display: grid;
+        gap: 2em;
+        padding: 3em;
+        max-width: 95%;
+        width: 95%;
+        margin: 0 auto;
+        font-size: clamp(1rem, 0.9rem + 0.5vw, 1.5rem);
+        justify-items: center;
+        align-items: center;
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        aspect-ratio: 4/3;
+        min-height: 320px;
+        width: 100%;
+        max-width: 500px;
+        padding: 2em;
+        border-radius: 20px;
+        border: none;
+        background: var(--background-dark);
+        font-weight: 300;
+        overflow: hidden;
+        transition: all 0.3s ease;
+
+        --glow-x: 50%;
+        --glow-y: 50%;
+        --glow-intensity: 0;
+        --glow-radius: 200px;
+        --outer-intensity: 0;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+    }
+
+    .card:active {
+        transform: translateY(0px);
+        transition: transform 0.1s ease;
+    }
+
+    .card__header,
+    .card__content {
+        display: flex;
+        position: relative;
+        color: var(--white);
+    }
+
+    .card__header {
+        gap: 0.75em;
+        justify-content: space-between;
+    }
+
+    .card__content {
+        flex-direction: column;
+    }
+
+    .card__label {
+        font-size: 18px;
+        font-weight: 600;
+        opacity: 0.8;
+        margin-bottom: 1em;
+    }
+
+    .card__title,
+    .card__description {
+        --clamp-title: 1;
+        --clamp-desc: 2;
+    }
+
+    .card__title {
+        font-weight: 600;
+        font-size: 20px;
+        margin: 0 0 0.75em;
+        line-height: 1.2;
+    }
+
+    .card__description {
+        font-size: 14px;
+        line-height: 1.4;
+        opacity: 0.8;
+        margin: 0;
+    }
+
+    .card__subcategories {
+        margin-top: 1.5em;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75em;
+        justify-content: center;
+    }
+
+    .subcategory-btn {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 20px;
+        padding: 0.5em 1em;
+        color: white;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+    }
+
+    .subcategory-btn:hover {
+        background: transparent !important;
+        transform: translateY(-1px);
+        box-shadow: none !important;
+    }
+
+    .subcategory-btn:active {
+        transform: translateY(0);
+        background: transparent !important;
+    }
+
+    .subcategory-btn * {
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .subcategory-emoji {
+        font-size: 1rem;
+        background: transparent !important;
+    }
+
+    .subcategory-name {
+        font-weight: 500;
+        white-space: nowrap;
+        background: transparent !important;
+    }
+
+    .card__view-all {
+        margin-top: 1.5em;
+        display: flex;
+        justify-content: center;
+    }
+
+    .view-all-btn {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 25px;
+        padding: 0.75em 1.5em;
+        color: white !important;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+        outline: none !important;
+        text-decoration: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+    }
+
+    .view-all-btn:hover {
+        background: transparent !important;
+        transform: translateY(-2px);
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+        outline: none !important;
+    }
+
+    .view-all-btn:active {
+        transform: translateY(0);
+        box-shadow: none !important;
+        text-shadow: none !important;
+        filter: none !important;
+        outline: none !important;
+        background: transparent !important;
+    }
+
+    .view-all-btn * {
+        background: transparent !important;
+        text-shadow: none !important;
+        filter: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    .view-all-text {
+        font-weight: 600;
+        text-shadow: none !important;
+        filter: none !important;
+        outline: none !important;
+        background: transparent !important;
+    }
+
+    .card--text-autohide .card__title,
+    .card--text-autohide .card__description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card--text-autohide .card__title {
+        -webkit-line-clamp: var(--clamp-title);
+        line-clamp: var(--clamp-title);
+    }
+
+    .card--text-autohide .card__description {
+        -webkit-line-clamp: var(--clamp-desc);
+        line-clamp: var(--clamp-desc);
+    }
+
+    @media (max-width: 599px) {
+        .card-grid {
+            grid-template-columns: repeat(2, 1fr);
+            width: 95%;
             margin: 0 auto;
-            display: flex;
-            align-items: center;
-            padding: 0 40px;
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-        }
-        
-        .brand-logo {
-            font-size: 2.4em;
-            font-weight: 800;
-            text-decoration: none;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .brand-logo:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
-        }
-        
-        .nav-categories {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-        
-        .nav-category {
-            padding: 10px 20px;
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            position: relative;
-            cursor: pointer;
-            white-space: nowrap;
-            text-align: center;
-        }
-        
-        .nav-category:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-        
-        .dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 1001;
-            margin-top: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .nav-category:hover .dropdown {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        
-        .dropdown-item {
-            display: block;
-            padding: 12px 20px;
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-        }
-        
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-        
-        .dropdown-item:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            padding-left: 25px;
-        }
-        
-        .nav-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-left: auto;
-            justify-content: flex-end;
-        }
-        
-        .nav-btn {
-            padding: 12px 24px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        
-        .nav-btn:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-        }
-        
-        .logout-btn {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24);
+            padding: 1em;
+            gap: 1em;
+            max-width: 600px;
         }
 
-        .logout-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24) !important;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        .card {
+            width: 100%;
+            min-height: 280px;
+            padding: 1.5em;
         }
-        
-        .login-btn {
-            background: linear-gradient(135deg, #6f42c1, #41a5f7);
+    }
+
+    @media (min-width: 600px) {
+        .card-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4em;
+            padding: 3em;
+            max-width: 95%;
+            width: 95%;
         }
-        
-        .login-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #41a5f7) !important;
-            box-shadow: 0 5px 15px rgba(65, 165, 247, 0.4);
+    }
+
+    @media (min-width: 1024px) {
+        .card-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5em;
+            padding: 4em;
+            max-width: 95%;
+            width: 95%;
         }
-        
-        .database-dropdown {
-            position: relative;
-            display: inline-block;
+    }
+
+    /* Border glow effect */
+    .card--border-glow::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 6px;
+        background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.35)) 0%,
+            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.2)) 30%,
+            transparent 60%);
+        border-radius: inherit;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask-composite: subtract;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 1;
+    }
+
+    /* Outer ambient glow following the mouse (outside the border) - matching login card intensity */
+    .card--border-glow::before {
+        content: '';
+        position: absolute;
+        inset: -44px;
+        border-radius: calc(20px + 44px);
+        background: radial-gradient(240px circle at var(--glow-x) var(--glow-y),
+            rgba(220, 40, 100, 0.22) 0%,
+            rgba(220, 40, 100, 0.12) 40%,
+            rgba(220, 40, 100, 0.04) 70%,
+            transparent 80%);
+        filter: blur(12px);
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity .2s ease;
+        opacity: var(--outer-intensity, 0);
+        mix-blend-mode: screen;
+    }
+
+    .card--border-glow:hover::after {
+        opacity: 1;
+    }
+
+    .card--border-glow:hover::before {
+        opacity: 1;
+    }
+
+    .card--border-glow:hover {
+        box-shadow: 0 4px 20px rgba(82, 9, 27, 0.4), 0 0 30px var(--purple-glow);
+    }
+
+    .particle-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .particle::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: rgba(202, 11, 69, 0.2);
+        border-radius: 50%;
+        z-index: -1;
+    }
+
+    .particle-container:hover {
+        box-shadow: 0 4px 20px rgba(78, 24, 40, 0.2), 0 0 30px var(--purple-glow);
+    }
+
+    /* Global spotlight styles */
+    .global-spotlight {
+        mix-blend-mode: screen;
+        will-change: transform, opacity;
+        z-index: 200 !important;
+        pointer-events: none;
+    }
+
+    .bento-section {
+        position: relative;
+        user-select: none;
+    }
+
+    /* Global override to ensure no backgrounds on any buttons */
+    button.subcategory-btn,
+    a.view-all-btn,
+    .subcategory-btn,
+    .view-all-btn {
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+    }
+
+    button.subcategory-btn *,
+    a.view-all-btn *,
+    .subcategory-btn *,
+    .view-all-btn * {
+        background: transparent !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    /* Override any JavaScript-set background colors */
+    .card {
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+    }
+
+    .card * {
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+    }
+
+    /* Override inline styles that might be set by JavaScript */
+    .card[style*="background"],
+    .card *[style*="background"] {
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+    }
+
+    /* Nuclear option - remove ALL possible backgrounds from ANY element in cards */
+    .card *,
+    .card button *,
+    .card a *,
+    .card span *,
+    .card div * {
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    /* Specific overrides for all possible button and link states */
+    .subcategory-btn,
+    .subcategory-btn:hover,
+    .subcategory-btn:active,
+    .subcategory-btn:focus,
+    .subcategory-btn:visited {
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    .view-all-btn,
+    .view-all-btn:hover,
+    .view-all-btn:active,
+    .view-all-btn:focus,
+    .view-all-btn:visited {
+        background: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2rem;
         }
-        
-        .database-btn {
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        
-        .dropdown-content {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 1001;
-            margin-top: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0 !important;
-            font-size: 1em !important;
-        }
-        .dropdown-content a {
-            display: block;
-            padding: 12px 20px;
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-            border-radius: 0;
-        }
-        .dropdown-content a:last-child {
-            border-bottom: none;
-        }
-        .dropdown-content a:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            padding-left: 25px;
-        }
-        .database-dropdown:hover .dropdown-content {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        
-        .search-container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        
+
         .search-form {
-            display: flex;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
+            flex-direction: column;
+            padding: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Load GSAP library dynamically
+function loadGSAP() {
+    return new Promise((resolve, reject) => {
+        if (typeof gsap !== 'undefined') {
+            resolve(gsap);
+            return;
         }
         
-        .search-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-            background: white;
-        }
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
+        script.onload = () => {
+            console.log('GSAP loaded successfully from CDN');
+            resolve(gsap);
+        };
+        script.onerror = () => {
+            console.error('Failed to load GSAP from CDN');
+            reject(new Error('GSAP failed to load'));
+        };
+        document.head.appendChild(script);
+    });
+}
+
+// Initialize Magic Bento after GSAP is loaded
+async function initializeMagicBento() {
+    try {
+        console.log('Starting Magic Bento initialization...');
+        await loadGSAP();
+        console.log('GSAP library loaded successfully');
         
-        .search-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
+        const container = document.getElementById('magic-bento-container');
+        console.log('Container found:', container);
         
-        .search-button {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        if (container) {
+            console.log('Creating Magic Bento instance...');
+            const magicBento = new MagicBento(container, {
+                textAutoHide: true,
+                enableStars: true,
+                enableSpotlight: true,
+                enableBorderGlow: true,
+                enableTilt: false,
+                enableMagnetism: true,
+                clickEffect: true,
+                spotlightRadius: 300,
+                particleCount: 12,
+                glowColor: "243, 86, 113"
+            });
+            console.log('Magic Bento created successfully:', magicBento);
+        } else {
+            console.error('Container not found!');
         }
+    } catch (error) {
+        console.error('Error initializing Magic Bento:', error);
+        console.error('Error details:', error.stack);
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, checking container...');
+    const container = document.getElementById('magic-bento-container');
+    console.log('Container found on DOM load:', container);
+    
+    if (container) {
+        console.log('Container innerHTML:', container.innerHTML);
+        initializeMagicBento();
+    } else {
+        console.error('Container not found on DOM load!');
+    }
+});
+
+// Magic Bento Component Implementation
+const DEFAULT_PARTICLE_COUNT = 12;
+const DEFAULT_SPOTLIGHT_RADIUS = 300;
+const DEFAULT_GLOW_COLOR = "132, 0, 255";
+const MOBILE_BREAKPOINT = 768;
+
+// Make cardData available globally for navigation
+window.cardDataForNavigation = [
+    {
+        color: "#060010",
+        title: "Phone Chargers",
+        description: "Charging cables, wireless chargers, and accessories",
+        label: "Power",
+        categoryId: 22,
+        url: "/category/22/",
+        subcategories: [
+            { name: "Charging Cables", url: "/category/25/", emoji: "🔌" },
+            { name: "Wireless Chargers", url: "/category/26/", emoji: "🔋" }
+        ]
+    },
+    {
+        color: "#060010",
+        title: "Earphones & Headphones",
+        description: "Earbuds, wired earphones, and headphone cases",
+        label: "Audio",
+        categoryId: 27,
+        url: "/category/27/",
+        subcategories: [
+            { name: "Earbuds", url: "/category/28/", emoji: "🎧" },
+            { name: "Wired Earphones", url: "/category/29/", emoji: "🎧" },
+            { name: "Headphones", url: "/category/30/", emoji: "🎧" },
+            { name: "Earbuds Cases", url: "/category/31/", emoji: "🎧" }
+        ]
+    },
+    {
+        color: "#060010",
+        title: "PC Accessories",
+        description: "Keyboards, mouses, and speakers",
+        label: "Computing",
+        categoryId: 32,
+        url: "/category/32/",
+        subcategories: [
+            { name: "Keyboards", url: "/category/33/", emoji: "⌨️" },
+            { name: "Mouses", url: "/category/34/", emoji: "🖱️" },
+            { name: "Speakers", url: "/category/35/", emoji: "🔊" }
+        ]
+    },
+    {
+        color: "#060010",
+        title: "Phone Accessories",
+        description: "Phone cases, tripods, and mobile gear",
+        label: "Mobile",
+        categoryId: 36,
+        url: "/category/36/",
+        subcategories: [
+            { name: "Phone Cases", url: "/category/37/", emoji: "📱" },
+            { name: "Tripods", url: "/category/38/", emoji: "📱" }
+        ]
+    }
+];
+
+const createParticleElement = (x, y, color = DEFAULT_GLOW_COLOR) => {
+    const el = document.createElement("div");
+    el.className = "particle";
+    el.style.cssText = `
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: rgba(${color}, 1);
+        box-shadow: 0 0 6px rgba(${color}, 0.6);
+        pointer-events: none;
+        z-index: 100;
+        left: ${x}px;
+        top: ${y}px;
+    `;
+    return el;
+};
+
+const calculateSpotlightValues = (radius) => ({
+    proximity: radius * 0.5,
+    fadeDistance: radius * 0.75,
+});
+
+const updateCardGlowProperties = (card, mouseX, mouseY, glow, radius) => {
+    const rect = card.getBoundingClientRect();
+    const relativeX = ((mouseX - rect.left) / rect.width) * 100;
+    const relativeY = ((mouseY - rect.top) / rect.height) * 100;
+
+    card.style.setProperty("--glow-x", `${relativeX}%`);
+    card.style.setProperty("--glow-y", `${relativeY}%`);
+    card.style.setProperty("--glow-intensity", glow.toString());
+    card.style.setProperty("--glow-radius", `${radius}px`);
+    card.style.setProperty("--outer-intensity", glow.toString());
+};
+
+class ParticleCard {
+    constructor(element, options = {}) {
+        this.element = element;
+        this.options = {
+            particleCount: options.particleCount || DEFAULT_PARTICLE_COUNT,
+            glowColor: options.glowColor || DEFAULT_GLOW_COLOR,
+            enableTilt: options.enableTilt !== false,
+            clickEffect: options.clickEffect !== false,
+            enableMagnetism: options.enableMagnetism !== false,
+            ...options
+        };
         
-        .search-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        this.particles = [];
+        this.timeouts = [];
+        this.isHovered = false;
+        this.memoizedParticles = [];
+        this.particlesInitialized = false;
+        this.magnetismAnimation = null;
+        
+        this.init();
+    }
+
+    init() {
+        this.initializeParticles();
+        this.bindEvents();
+    }
+
+    initializeParticles() {
+        if (this.particlesInitialized || !this.element) return;
+
+        const { width, height } = this.element.getBoundingClientRect();
+        this.memoizedParticles = Array.from({ length: this.options.particleCount }, () =>
+            createParticleElement(
+                Math.random() * width,
+                Math.random() * height,
+                this.options.glowColor
+            )
+        );
+        this.particlesInitialized = true;
+    }
+
+    clearAllParticles() {
+        this.timeouts.forEach(clearTimeout);
+        this.timeouts = [];
+        this.magnetismAnimation?.kill();
+
+        this.particles.forEach((particle) => {
+            gsap.to(particle, {
+                scale: 0,
+                opacity: 0,
+                duration: 0.3,
+                ease: "back.in(1.7)",
+                onComplete: () => {
+                    particle.parentNode?.removeChild(particle);
+                },
+            });
+        });
+        this.particles = [];
+    }
+
+    animateParticles() {
+        if (!this.element || !this.isHovered) return;
+
+        if (!this.particlesInitialized) {
+            this.initializeParticles();
         }
-        
-        .main-content {
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .welcome-section {
-            text-align: center;
-            margin-bottom: 60px;
-            color: white;
-        }
-        
-        .welcome-title {
-            font-size: 3em;
-            font-weight: 300;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .welcome-subtitle {
-            font-size: 1.3em;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        
-        @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-                gap: 20px;
+
+        this.memoizedParticles.forEach((particle, index) => {
+            const timeoutId = setTimeout(() => {
+                if (!this.isHovered || !this.element) return;
+
+                const clone = particle.cloneNode(true);
+                this.element.appendChild(clone);
+                this.particles.push(clone);
+
+                gsap.fromTo(
+                    clone,
+                    { scale: 0, opacity: 0 },
+                    { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" }
+                );
+
+                gsap.to(clone, {
+                    x: (Math.random() - 0.5) * 100,
+                    y: (Math.random() - 0.5) * 100,
+                    rotation: Math.random() * 360,
+                    duration: 2 + Math.random() * 2,
+                    ease: "none",
+                    repeat: -1,
+                    yoyo: true,
+                });
+
+                gsap.to(clone, {
+                    opacity: 0.3,
+                    duration: 1.5,
+                    ease: "power2.inOut",
+                    repeat: -1,
+                    yoyo: true,
+                });
+            }, index * 100);
+
+            this.timeouts.push(timeoutId);
+        });
+    }
+
+    bindEvents() {
+        const element = this.element;
+
+        const handleMouseEnter = () => {
+            this.isHovered = true;
+            this.animateParticles();
+
+            if (this.options.enableTilt) {
+                gsap.to(element, {
+                    rotateX: 5,
+                    rotateY: 5,
+                    duration: 0.3,
+                    ease: "power2.out",
+                    transformPerspective: 1000,
+                });
             }
+        };
+
+        const handleMouseLeave = () => {
+            this.isHovered = false;
+            this.clearAllParticles();
+
+            if (this.options.enableTilt) {
+                gsap.to(element, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            }
+
+            if (this.options.enableMagnetism) {
+                gsap.to(element, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            }
+        };
+
+        const handleMouseMove = (e) => {
+            if (!this.options.enableTilt && !this.options.enableMagnetism) return;
+
+            const rect = element.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            if (this.options.enableTilt) {
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                gsap.to(element, {
+                    rotateX,
+                    rotateY,
+                    duration: 0.1,
+                    ease: "power2.out",
+                    transformPerspective: 1000,
+                });
+            }
+
+            if (this.options.enableMagnetism) {
+                const magnetX = (x - centerX) * 0.05;
+                const magnetY = (y - centerY) * 0.05;
+
+                this.magnetismAnimation = gsap.to(element, {
+                    x: magnetX,
+                    y: magnetY,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            }
+        };
+
+        const handleClick = (e) => {
+            if (!this.options.clickEffect) return;
+
+            const rect = element.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const maxDistance = Math.max(
+                Math.hypot(x, y),
+                Math.hypot(x - rect.width, y),
+                Math.hypot(x, y - rect.height),
+                Math.hypot(x - rect.width, y - rect.height)
+            );
+
+            const ripple = document.createElement("div");
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${maxDistance * 2}px;
+                height: ${maxDistance * 2}px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(${this.options.glowColor}, 0.4) 0%, rgba(${this.options.glowColor}, 0.2) 30%, transparent 70%);
+                left: ${x - maxDistance}px;
+                top: ${y - maxDistance}px;
+                pointer-events: none;
+                z-index: 1000;
+            `;
+
+            element.appendChild(ripple);
+
+            gsap.fromTo(
+                ripple,
+                {
+                    scale: 0,
+                    opacity: 1,
+                },
+                {
+                    scale: 1,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onComplete: () => ripple.remove(),
+                }
+            );
+
+            // Add navigation after ripple effect
+            setTimeout(() => {
+                // Find the card data for this element
+                const cardIndex = Array.from(this.element.parentElement.children).indexOf(this.element);
+                const cardData = window.cardDataForNavigation[cardIndex];
+                if (cardData && cardData.url) {
+                    console.log(`Navigating to: ${cardData.url}`);
+                    window.location.href = cardData.url;
+                }
+            }, 300);
+        };
+
+        element.addEventListener("mouseenter", handleMouseEnter);
+        element.addEventListener("mouseleave", handleMouseLeave);
+        element.addEventListener("mousemove", handleMouseMove);
+        element.addEventListener("click", handleClick);
+    }
+}
+
+class GlobalSpotlight {
+    constructor(gridElement, options = {}) {
+        this.gridElement = gridElement;
+        this.options = {
+            enabled: options.enabled !== false,
+            spotlightRadius: options.spotlightRadius || DEFAULT_SPOTLIGHT_RADIUS,
+            glowColor: options.glowColor || DEFAULT_GLOW_COLOR,
+            ...options
+        };
+        
+        this.spotlight = null;
+        this.isInsideSection = false;
+        
+        if (this.options.enabled) {
+            this.init();
+        }
+    }
+
+    init() {
+        this.createSpotlight();
+        this.bindEvents();
+    }
+
+    createSpotlight() {
+        this.spotlight = document.createElement("div");
+        this.spotlight.className = "global-spotlight";
+        this.spotlight.style.cssText = `
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle,
+                rgba(${this.options.glowColor}, 0.15) 0%,
+                rgba(${this.options.glowColor}, 0.08) 15%,
+                rgba(${this.options.glowColor}, 0.04) 25%,
+                rgba(${this.options.glowColor}, 0.02) 40%,
+                rgba(${this.options.glowColor}, 0.01) 65%,
+                transparent 70%
+            );
+            z-index: 200;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: screen;
+        `;
+        document.body.appendChild(this.spotlight);
+    }
+
+    bindEvents() {
+        const handleMouseMove = (e) => {
+            if (!this.spotlight || !this.gridElement) return;
+
+            const section = this.gridElement.closest(".bento-section");
+            const rect = section?.getBoundingClientRect();
+            const mouseInside =
+                rect &&
+                e.clientX >= rect.left &&
+                e.clientX <= rect.right &&
+                e.clientY >= rect.top &&
+                e.clientY <= rect.bottom;
+
+            this.isInsideSection = mouseInside || false;
+            const cards = this.gridElement.querySelectorAll(".card");
+
+            if (!mouseInside) {
+                gsap.to(this.spotlight, {
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+                cards.forEach((card) => {
+                    card.style.setProperty("--glow-intensity", "0");
+                    card.style.setProperty("--outer-intensity", "0");
+                });
+                return;
+            }
+
+            const { proximity, fadeDistance } = calculateSpotlightValues(this.options.spotlightRadius);
+            let minDistance = Infinity;
+
+            cards.forEach((card) => {
+                const cardElement = card;
+                const cardRect = cardElement.getBoundingClientRect();
+                const centerX = cardRect.left + cardRect.width / 2;
+                const centerY = cardRect.top + cardRect.height / 2;
+                const distance =
+                    Math.hypot(e.clientX - centerX, e.clientY - centerY) -
+                    Math.max(cardRect.width, cardRect.height) / 2;
+                const effectiveDistance = Math.max(0, distance);
+
+                minDistance = Math.min(minDistance, effectiveDistance);
+
+                let glowIntensity = 0;
+                if (effectiveDistance <= proximity) {
+                    glowIntensity = 1;
+                } else if (effectiveDistance <= fadeDistance) {
+                    glowIntensity =
+                        (fadeDistance - effectiveDistance) / (fadeDistance - proximity);
+                }
+
+                updateCardGlowProperties(
+                    cardElement,
+                    e.clientX,
+                    e.clientY,
+                    glowIntensity,
+                    this.options.spotlightRadius
+                );
+            });
+
+            gsap.to(this.spotlight, {
+                left: e.clientX,
+                top: e.clientY,
+                duration: 0.1,
+                ease: "power2.out",
+            });
+
+            const targetOpacity =
+                minDistance <= proximity
+                    ? 0.8
+                    : minDistance <= fadeDistance
+                        ? ((fadeDistance - minDistance) / (fadeDistance - proximity)) * 0.8
+                        : 0;
+
+            gsap.to(this.spotlight, {
+                opacity: targetOpacity,
+                duration: targetOpacity > 0 ? 0.2 : 0.5,
+                ease: "power2.out",
+            });
+        };
+
+        const handleMouseLeave = () => {
+            this.isInsideSection = false;
+            this.gridElement?.querySelectorAll(".card").forEach((card) => {
+                card.style.setProperty("--glow-intensity", "0");
+                card.style.setProperty("--outer-intensity", "0");
+            });
+            if (this.spotlight) {
+                gsap.to(this.spotlight, {
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            }
+        };
+
+        document.addEventListener("mousemove", handleMouseMove);
+        document.addEventListener("mouseleave", handleMouseLeave);
+    }
+
+    destroy() {
+        this.spotlight?.parentNode?.removeChild(this.spotlight);
+    }
+}
+
+class MagicBento {
+    constructor(container, options = {}) {
+        console.log('MagicBento constructor called with:', { container, options });
+        this.container = container;
+        this.options = {
+            textAutoHide: options.textAutoHide !== false,
+            enableStars: options.enableStars !== false,
+            enableSpotlight: options.enableSpotlight !== false,
+            enableBorderGlow: options.enableBorderGlow !== false,
+            enableTilt: options.enableTilt !== false,
+            enableMagnetism: options.enableMagnetism !== false,
+            clickEffect: options.clickEffect !== false,
+            spotlightRadius: options.spotlightRadius || DEFAULT_SPOTLIGHT_RADIUS,
+            particleCount: options.particleCount || DEFAULT_PARTICLE_COUNT,
+            glowColor: options.glowColor || DEFAULT_GLOW_COLOR,
+            ...options
+        };
+        
+        this.gridElement = null;
+        this.spotlight = null;
+        this.particleCards = [];
+        
+        console.log('MagicBento options:', this.options);
+        console.log('Container element:', this.container);
+        this.init();
+    }
+
+    init() {
+        console.log('MagicBento init() called');
+        this.createGrid();
+        this.createCards();
+        this.createSpotlight();
+        console.log('MagicBento init() completed');
+    }
+
+    createGrid() {
+        console.log('Creating grid element...');
+        this.gridElement = document.createElement("div");
+        this.gridElement.className = "card-grid bento-section";
+        console.log('Grid element created:', this.gridElement);
+        console.log('Container before append:', this.container);
+        this.container.appendChild(this.gridElement);
+        console.log('Grid element appended to container');
+        console.log('Container after append:', this.container);
+    }
+
+    createCards() {
+        console.log('Creating cards...');
+        console.log('Card data:', window.cardDataForNavigation);
+        console.log('Grid element:', this.gridElement);
+        
+        window.cardDataForNavigation.forEach((card, index) => {
+            console.log(`Creating card ${index}:`, card);
+            const cardElement = this.createCardElement(card, index);
+            console.log(`Card element ${index} created:`, cardElement);
+            this.gridElement.appendChild(cardElement);
+            console.log(`Card ${index} appended to grid`);
             
-            .nav-categories {
-                flex-wrap: wrap;
-                justify-content: center;
+            if (this.options.enableStars) {
+                const particleCard = new ParticleCard(cardElement, {
+                    particleCount: this.options.particleCount,
+                    glowColor: this.options.glowColor,
+                    enableTilt: this.options.enableTilt,
+                    clickEffect: this.options.clickEffect,
+                    enableMagnetism: this.options.enableMagnetism,
+                });
+                this.particleCards.push(particleCard);
             }
-            
-            .dropdown {
-                position: static;
-                opacity: 1;
-                visibility: visible;
-                transform: none;
-                margin-top: 10px;
-                box-shadow: none;
-                background: rgba(102, 126, 234, 0.1);
-            }
-            
-            .welcome-title {
-                font-size: 2em;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-left">
-                <div class="brand">
-                    <a href="{% url 'home' %}" class="brand-logo">TechMart</a>
+        });
+        console.log('All cards created and appended');
+    }
+
+    createCardElement(card, index) {
+        console.log(`Creating card element for ${card.title}...`);
+        const cardElement = document.createElement("div");
+        const baseClassName = `card ${this.options.textAutoHide ? "card--text-autohide" : ""} ${this.options.enableBorderGlow ? "card--border-glow" : ""}`;
+        
+        cardElement.className = baseClassName;
+        cardElement.style.backgroundColor = card.color;
+        cardElement.style.setProperty("--glow-color", this.options.glowColor);
+        
+        // Add cursor pointer to indicate clickable
+        cardElement.style.cursor = "pointer";
+
+        cardElement.innerHTML = `
+            <div class="card__header">
+                <div class="card__label">${card.label}</div>
+            </div>
+            <div class="card__content">
+                <h2 class="card__title">${card.title}</h2>
+                <p class="card__description">${card.description}</p>
+                <div class="card__subcategories">
+                    ${card.subcategories ? card.subcategories.map(sub => `
+                        <button class="subcategory-btn" data-url="${sub.url}">
+                            <span class="subcategory-emoji">${sub.emoji}</span>
+                            <span class="subcategory-name">${sub.name}</span>
+                        </button>
+                    `).join('') : ''}
                 </div>
-                
-                <div class="nav-categories">
-                    {% for category in categories %}
-                        <div class="nav-category">
-                            <a href="{% url 'product_list_by_category' category.id %}" style="text-decoration: none; color: inherit;">
-                                {{ category.name }}
-                            </a>
-                            {% if category.subcategories.all %}
-                                <div class="dropdown">
-                                    {% for subcategory in category.subcategories.all %}
-                                        <a href="{% url 'product_list_by_category' subcategory.id %}" class="dropdown-item">
-                                            {{ subcategory.name }}
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+                <div class="card__view-all">
+                    <a href="${card.url}" class="view-all-btn">
+                        <span class="view-all-text">View All ${card.title}</span>
+                    </a>
                 </div>
             </div>
-            
-            <div class="nav-actions">
-                                {% if request.session.is_admin %}
-                    <div class="database-dropdown">
-                        <button class="nav-btn database-btn" style="background: #6f42c1;">🗄️ Database ▼</button>
-                        <div class="dropdown-content">
-                            <a href="{% url 'add_product' %}">➕ Add Product</a>
-                            <a href="{% url 'orders_database' %}">📋 Orders Placed</a>
-                        </div>
-                    </div>
-                {% endif %}
-                <a href="{% url 'cart_detail' %}" class="nav-btn" style="background: none; border: none; font-size: 1.5em; padding: 5px 10px;">🛒</a>
-                {% if request.session.is_admin or request.session.is_logged_in %}
-                    <a href="{% url 'order_history' %}" class="nav-btn" style="background: none; border: none; font-size: 1.5em; padding: 5px 10px;">👤</a>
-                    <a href="{% url 'logout' %}" class="nav-btn logout-btn">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="nav-btn login-btn">Login</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-    
-    <div class="search-container">
-        <form method="GET" action="{% url 'search_products' %}" class="search-form">
-            <input type="text" name="q" placeholder="Search for products..." class="search-input" required>
-            <button type="submit" class="search-button">Search</button>
-        </form>
-    </div>
-    
-    <div class="main-content">
-        <div class="welcome-section">
-            <h1 class="welcome-title">Welcome to TechMart</h1>
-            <p class="welcome-subtitle">Discover the latest in technology and gadgets. Browse our curated collection of premium tech accessories and find exactly what you need.</p>
-        </div>
-    </div>
-</body>
-</html> 
+        `;
+
+        console.log(`Card element ${index} HTML:`, cardElement.innerHTML);
+        console.log(`Card element ${index} styles:`, cardElement.style.cssText);
+
+        // Add click event to navigate to category page
+        cardElement.addEventListener('click', (e) => {
+            // Don't navigate if clicking on subcategory buttons
+            if (e.target.closest('.subcategory-btn')) {
+                return;
+            }
+            console.log(`Card clicked: ${card.title}, navigating to: ${card.url}`);
+            window.location.href = card.url;
+        });
+
+        // Add click events for subcategory buttons
+        if (card.subcategories) {
+            const subcategoryButtons = cardElement.querySelectorAll('.subcategory-btn');
+            subcategoryButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent card click event
+                    const url = btn.getAttribute('data-url');
+                    console.log(`Subcategory clicked: ${btn.querySelector('.subcategory-name').textContent}, navigating to: ${url}`);
+                    window.location.href = url;
+                });
+            });
+        }
+
+
+
+        if (!this.options.enableStars) {
+            this.bindCardEvents(cardElement);
+        }
+
+        return cardElement;
+    }
+
+    bindCardEvents(cardElement) {
+        const handleMouseMove = (e) => {
+            const rect = cardElement.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            if (this.options.enableTilt) {
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                gsap.to(cardElement, {
+                    rotateX,
+                    rotateY,
+                    duration: 0.1,
+                    ease: "power2.out",
+                    transformPerspective: 1000,
+                });
+            }
+
+            if (this.options.enableMagnetism) {
+                const magnetX = (x - centerX) * 0.05;
+                const magnetY = (y - centerY) * 0.05;
+                gsap.to(cardElement, {
+                    x: magnetX,
+                    y: magnetY,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            }
+        };
+
+        const handleMouseLeave = () => {
+            if (this.options.enableTilt) {
+                gsap.to(cardElement, {
+                    rotateX: 0,
+                    rotateY: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            }
+
+            if (this.options.enableMagnetism) {
+                gsap.to(cardElement, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            }
+        };
+
+        const handleClick = (e) => {
+            if (!this.options.clickEffect) return;
+
+            const rect = cardElement.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const maxDistance = Math.max(
+                Math.hypot(x, y),
+                Math.hypot(x - rect.width, y),
+                Math.hypot(x, y - rect.height),
+                Math.hypot(x - rect.width, y - rect.height)
+            );
+
+            const ripple = document.createElement("div");
+            ripple.style.cssText = `
+                position: absolute;
+                width: ${maxDistance * 2}px;
+                height: ${maxDistance * 2}px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(${this.options.glowColor}, 0.4) 0%, rgba(${this.options.glowColor}, 0.2) 30%, transparent 70%);
+                left: ${x - maxDistance}px;
+                top: ${y - maxDistance}px;
+                pointer-events: none;
+                z-index: 1000;
+            `;
+
+            cardElement.appendChild(ripple);
+
+            gsap.fromTo(
+                ripple,
+                {
+                    scale: 0,
+                    opacity: 1,
+                },
+                {
+                    scale: 1,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onComplete: () => ripple.remove(),
+                }
+            );
+        };
+
+        cardElement.addEventListener("mousemove", handleMouseMove);
+        cardElement.addEventListener("mouseleave", handleMouseLeave);
+        cardElement.addEventListener("click", handleClick);
+    }
+
+    createSpotlight() {
+        if (this.options.enableSpotlight) {
+            this.spotlight = new GlobalSpotlight(this.gridElement, {
+                enabled: this.options.enableSpotlight,
+                spotlightRadius: this.options.spotlightRadius,
+                glowColor: this.options.glowColor,
+            });
+        }
+    }
+
+    destroy() {
+        this.particleCards.forEach(card => card.clearAllParticles());
+        this.spotlight?.destroy();
+        this.container.innerHTML = '';
+    }
+}
+</script>
+{% endblock %} 

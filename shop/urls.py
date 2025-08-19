@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('contact/', views.contact, name='contact'),
     path('test/', views.test_view, name='test'),
     path('simple-login-test/', views.simple_login_test, name='simple_login_test'),
     path('minimal-test/', views.minimal_test, name='minimal_test'),
@@ -42,4 +43,11 @@ urlpatterns = [
     path('thawani/cancel/', views.thawani_cancel, name='thawani_cancel'),
     path('thawani/mock-success/', views.thawani_mock_success, name='thawani_mock_success'),
     path('thawani/webhook/', views.thawani_webhook, name='thawani_webhook'),
+    
+    # Saved information management
+    path('save-address-info/', views.save_address_info, name='save_address_info'),
+    path('save-payment-info/', views.save_payment_info, name='save_payment_info'),
+    path('get-saved-info/', views.get_saved_info, name='get_saved_info'),
+    path('get-address-details/<int:address_id>/', views.get_address_details, name='get_address_details'),
+    path('get-payment-details/<int:payment_id>/', views.get_payment_details, name='get_payment_details'),
 ]

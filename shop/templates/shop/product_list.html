@@ -3,240 +3,254 @@
 {% block title %}{{ category.name }} Products - TechMart{% endblock %}
 
 {% block extra_css %}
-        .main-content {
-            padding: 40px 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .back-btn {
-            display: inline-block;
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        
-        .back-btn:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-        
-        .category-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
+<style>
+    .main-content {
+        padding: 40px 20px;
+        width: 100%;
+        margin: 0;
+        background: linear-gradient(135deg,rgb(31, 1, 12) 0%,rgb(68, 9, 32) 50%, rgb(0, 0, 0) 100%);
+        min-height: 100vh;
+    }
+    
+    .back-btn {
+        display: inline-block;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        opacity: 0.9;
+    }
+    
+    .back-btn:hover {
+        opacity: 1;
+        text-decoration: underline;
+    }
+    
+    .category-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .category-title {
+        font-size: 2.5em;
+        font-weight: 300;
+        color: white;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .category-subtitle {
+        font-size: 1.2em;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 0;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+        max-width: 1600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .product-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .product-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        background: #f5f5f5;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .product-name {
+        font-size: 1.3em;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .product-price {
+        color: rgb(0, 0, 0);
+        font-weight: bold;
+        font-size: 1.4em;
+        margin-bottom: 15px;
+    }
+    
+    .product-description {
+        color: #666;
+        font-size: 0.95em;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+    
+    .product-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.3s ease;
+    }
+    
+    .product-link:hover .product-name {
+        color: #667eea;
+    }
+    
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(65, 65, 65) 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .add-to-cart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .edit-btn {
+        background: #28a745;
+        margin-top: 10px;
+    }
+    
+    .edit-btn:hover {
+        background: #218838;
+    }
+    
+    .product-image-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        background: #f5f5f5;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3em;
+        color: #ccc;
+    }
+    
+    .no-products {
+        text-align: center;
+        color: white;
+        font-size: 1.2em;
+        margin-top: 40px;
+    }
+    
+    @media (max-width: 768px) {
         .category-title {
-            font-size: 2.5em;
-            font-weight: 300;
-            color: white;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .category-subtitle {
-            font-size: 1.2em;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0;
+            font-size: 2em;
         }
         
         .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
         
         .product-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .product-card:hover {
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            padding: 20px;
         }
         
         .product-image {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            background: #f5f5f5;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .product-name {
-            font-size: 1.3em;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .product-price {
-            color:rgb(0, 0, 0);
-            font-weight: bold;
-            font-size: 1.4em;
-            margin-bottom: 15px;
-        }
-        
-        .product-description {
-            color: #666;
-            font-size: 0.95em;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-        
-        .product-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            transition: all 0.3s ease;
-        }
-        
-        .product-link:hover {
-            transform: translateY(-5px);
-        }
-        
-        .product-link:hover .product-name {
-            color: #667eea;
-        }
-        
-        .add-to-cart-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(65, 65, 65) 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .add-to-cart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .edit-btn {
-            background: #28a745;
-            margin-top: 10px;
-        }
-        
-        .edit-btn:hover {
-            background: #218838;
+            width: 100px;
+            height: 100px;
         }
         
         .product-image-placeholder {
-            width: 150px;
-            height: 150px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            background: #f5f5f5;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3em;
-            color: #ccc;
+            width: 100px;
+            height: 100px;
+            font-size: 2.5em;
         }
         
-        @media (max-width: 768px) {
-            .category-title {
-                font-size: 2em;
-            }
-            
-            .products-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .product-card {
-                padding: 20px;
-            }
-            
-            .product-image {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .product-image-placeholder {
-                width: 100px;
-                height: 100px;
-                font-size: 2.5em;
-            }
-            
-            .product-name {
-                font-size: 1em;
-            }
-            
-            .product-price {
-                font-size: 1.1em;
-            }
-            
-            .add-to-cart-btn {
-                padding: 8px 15px;
-                font-size: 12px;
-            }
+        .product-name {
+            font-size: 1em;
         }
+        
+        .product-price {
+            font-size: 1.1em;
+        }
+        
+        .add-to-cart-btn {
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-    <div class="main-content">
-        <a href="{% url 'home' %}" class="back-btn">← Back to Home</a>
-        
-        <div class="category-header">
-            <h1 class="category-title">{{ category.name }}</h1>
-            <p class="category-subtitle">Browse our {{ category.name }} collection</p>
-        </div>
-        
+<div class="main-content">
+    <a href="{% url 'category_list' %}" class="back-btn">← Back to Categories</a>
+    
+    <div class="category-header">
+        <h1 class="category-title">{{ category.name }}</h1>
+        <p class="category-subtitle">Browse our {{ category.name }} collection</p>
+    </div>
+    
+    {% if products %}
         <div class="products-grid">
             {% for product in products %}
             <div class="product-card">
                 <a href="{% url 'product_detail' product.id %}" class="product-link">
                     {% if product.image_url %}
-                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
                     {% else %}
-                    <div class="product-image-placeholder">📱</div>
+                        <div class="product-image-placeholder">📱</div>
                     {% endif %}
                     <div class="product-name">{{ product.name }}</div>
                     <div class="product-price">OMR {{ product.price }}</div>
                     <div class="product-description">{{ product.description|default:"No description available" }}</div>
                 </a>
+                
                 <form action="{% url 'add_to_cart' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.id }}">
                     <button type="submit" class="add-to-cart-btn">Add to Cart</button>
                 </form>
+                
                 {% if request.session.is_admin %}
                 <form action="{% url 'edit_product' product.id %}" method="get" style="margin-top: 10px;">
                     <button type="submit" class="add-to-cart-btn edit-btn">Edit Product</button>
                 </form>
                 {% endif %}
             </div>
-            {% empty %}
-            <div class="product-card">
-                <div class="product-image-placeholder">📱</div>
-                <div class="product-name">No products available</div>
-                <div class="product-price">Add some products first</div>
-            </div>
             {% endfor %}
         </div>
-    </div>
+    {% else %}
+        <div class="no-products">
+            <h3>No products available in this category</h3>
+            <p>Check back later for new products!</p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %} 

@@ -3,55 +3,29 @@
 {% block title %}{{ product.name }} - TechMart{% endblock %}
 
 {% block extra_css %}
-        .search-container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        
-        .search-form {
-            display: flex;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-            background: white;
-            color: #333;
-        }
-        
-        .search-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .search-button {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .search-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
+<style>
+  /* Background to match product list */
+  html, body {
+      background: linear-gradient(135deg, rgb(31, 1, 12) 0%, rgb(68, 9, 32) 50%, rgb(0, 0, 0) 100%) !important;
+  }
+
+  .search-container {
+      max-width: 500px; margin: 20px auto; padding: 0 20px;
+  }
+  /* Uiverse search - burgundy theme */
+  .form button { border: none; background: none; color: #8b8ba7; }
+  .form { --timing: .3s; --width-of-input: 500px; --height-of-input: 48px; --border-height: 2px; --input-bg: rgba(0,0,0,.5); --border-color: rgb(112,0,28); --border-radius: 30px; --after-border-radius: 10px; position: relative; width: var(--width-of-input); height: var(--height-of-input); display:flex; align-items:center; padding-inline:.8em; border-radius: var(--border-radius); transition: border-radius .5s ease; background: linear-gradient(135deg, rgba(255,255,255,.06) 0%, rgba(139,0,46,.25) 100%); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,.25); }
+  .input { font-size:1rem; background:transparent; width:100%; height:100%; padding-inline:.5em; padding-block:.7em; border:none; color:#fff; }
+  .input::placeholder { color: rgba(255,255,255,.8); }
+  /* remove animated bottom border */
+  .form:before { display:none !important; }
+  .form:focus-within { border-radius: var(--after-border-radius); }
+  .form:focus-within:before { display:none; }
+  .reset { border:none; background:none; opacity:0; visibility:hidden; color:#fff; }
+  .form input:not(:placeholder-shown) ~ .reset { opacity:1; visibility:visible; }
+  .form svg { width:17px; margin-top:3px; color:#fff; }
+  /* remove white focus ring */
+  .form, .form * { outline: none !important; box-shadow: none !important; }
 
         .product-container {
             max-width: 800px;
@@ -63,7 +37,7 @@
         }
 
         .product-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(0, 0, 0) 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -162,165 +136,48 @@
             border-left: 4px solid #667eea;
         }
 
-        .spec-label {
-            font-weight: 600;
-            color: #333;
-        }
+        .spec-label { font-weight: 600; color: #333; }
+        .spec-value { color: #666; }
 
-        .spec-value {
-            color: #666;
-        }
+        .shipping-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .shipping-item { display:flex; align-items:center; gap:15px; padding:20px; background:#f8f9fa; border-radius:10px; border:1px solid #e9ecef; }
+        .shipping-icon { font-size:2em; }
+        .shipping-item strong { color:#333; display:block; margin-bottom: 5px; }
+        .shipping-item p { color:#666; margin:0; font-size:0.9em; }
 
-        .shipping-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
+        .product-details { margin-bottom: 30px; }
+        .product-price { font-size: 2em; font-weight: bold; color: #667eea; margin-bottom: 15px; }
+        .product-description { font-size: 1.1em; line-height: 1.6; color: #555; margin-bottom: 20px; }
+        .product-category { background:#f8f9fa; padding:10px 15px; border-radius:8px; display:inline-block; color:#667eea; font-weight:600; }
 
-        .shipping-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px solid #e9ecef;
-        }
+        .button-group { display:flex; gap:15px; justify-content:center; margin-top:30px; flex-wrap:wrap; }
+        .btn { padding:12px 30px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; transition: all .3s ease; text-decoration:none; display:inline-block; text-align:center; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,.3); }
+        .btn-secondary { background:#6c757d; color:#fff; }
+        .btn-secondary:hover { background:#5a6268; transform: translateY(-2px); }
+        .btn-success { background:#28a745; color:#fff; }
+        .btn-success:hover { background:#218838; transform: translateY(-2px); }
 
-        .shipping-icon {
-            font-size: 2em;
-        }
-
-        .shipping-item strong {
-            color: #333;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .shipping-item p {
-            color: #666;
-            margin: 0;
-            font-size: 0.9em;
-        }
-
-        .product-details {
-            margin-bottom: 30px;
-        }
-
-        .product-price {
-            font-size: 2em;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .product-description {
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #555;
-            margin-bottom: 20px;
-        }
-
-        .product-category {
-            background: #f8f9fa;
-            padding: 10px 15px;
-            border-radius: 8px;
-            display: inline-block;
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 768px) {
-            .product-main {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .product-image-section {
-                flex: none;
-            }
-
-            .product-image img {
-                max-width: 100%;
-                height: auto;
-            }
-
-            .specs-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .shipping-info {
-                grid-template-columns: 1fr;
-            }
-
-            .button-group {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
+        /* Cart hover feedback */
+        .btn-cart.feedback { transform: scale(1.1); box-shadow: 0 0 0 3px rgba(172,59,84,.4); }
+</style>
 {% endblock %}
 
 {% block content %}
     <div class="search-container">
-        <form method="GET" action="{% url 'search_products' %}" class="search-form">
-            <input type="text" name="q" placeholder="Search for products..." class="search-input" required>
-            <button type="submit" class="search-button">Search</button>
+        <form method="GET" action="{% url 'search_products' %}" class="form" novalidate>
+            <button type="submit" aria-label="Search">
+                <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
+                    <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+            <input class="input" name="q" placeholder="Search for products..." type="text">
+            <button class="reset" type="reset" aria-label="Clear">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </form>
     </div>
 
@@ -353,7 +210,7 @@
             </div>
 
             <div class="button-group">
-                <form action="{% url 'add_to_cart' %}" method="post" style="display: inline;">
+                <form id="add-to-cart-form" action="{% url 'add_to_cart' %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.id }}">
                     <button type="submit" class="btn btn-success">🛒 Add to Cart</button>
@@ -455,4 +312,47 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// AJAX add-to-cart and navbar cart feedback
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('add-to-cart-form');
+  if (!form) return;
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const csrf = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+    try {
+      const resp = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrf },
+        body: formData
+      });
+      const data = await resp.json();
+      if (data && data.success) {
+        // Update navbar cart badge
+        const cartBtn = document.querySelector('.btn-cart');
+        if (cartBtn) {
+          cartBtn.setAttribute('data-quantity', data.cart_quantity);
+          const qSpan = cartBtn.querySelector('.quantity');
+          if (qSpan) { qSpan.textContent = data.cart_quantity; qSpan.style.display = data.cart_quantity > 0 ? 'block' : 'none'; }
+          // Simulate hover feedback briefly
+          cartBtn.classList.add('feedback');
+          const icon = cartBtn.querySelector('.icon-cart');
+          if (icon) icon.style.transform = 'scale(1.2)';
+          setTimeout(() => {
+            cartBtn.classList.remove('feedback');
+            if (icon) icon.style.transform = '';
+          }, 900);
+        }
+
+      }
+    } catch (err) {
+      console.error('Add to cart error', err);
+    }
+  });
+});
+</script>
 {% endblock %}

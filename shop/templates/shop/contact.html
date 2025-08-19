@@ -1,0 +1,213 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}TechMart - Contact{% endblock %}
+
+{% block content %}
+<!-- Contact page content will go here -->
+<div id="beams-container"></div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Beams background styles */
+    #beams-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        background: #000000;
+        overflow: hidden;
+    }
+    
+    .beam {
+        position: absolute;
+        width: 120px;   /* vertical rods */
+        height: 400px;
+        background: linear-gradient(45deg, 
+            rgba(65, 0, 22, 0.8), 
+            rgba(99, 23, 42, 0.9), 
+            rgba(61, 0, 19, 0.8)
+        );
+        border-radius: 60px;
+        box-shadow: 
+            0 0 30px rgba(117, 1, 30, 0.75),
+            0 0 60px rgba(220, 20, 60, 0.4),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
+        opacity: 0.85;
+        transform: none;
+        filter: blur(1px);
+        transition: none;
+    }
+    
+    .beam.visible {
+        opacity: 0.85;
+    }
+    
+    /* Ensure content is above the background */
+    .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Set dark background for the page */
+    body {
+        background: #000000 !important;
+    }
+    
+    /* Make sure main content area has dark background */
+    main, .main-content {
+        background: #000000 !important;
+    }
+    
+    /* Override any light backgrounds from base template */
+    .navbar, .header, .nav {
+        background: rgba(0, 0, 0, 0.8) !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+class BeamsBackground {
+    constructor(container, options = {}) {
+        this.container = container;
+        this.options = {
+            beamsPerSide: 4,
+            dropSpeed: 0.5, // pixels per ms multiplier
+            gapFromEdge: 30,
+        };
+        this.beams = [];
+        this.animationId = null;
+        this.lastTime = 0;
+        this.allStopped = false;
+        this.init();
+    }
+    
+    init() {
+        this.createBeams();
+        this.startAnimation();
+    }
+    
+    createBeams() {
+        const containerWidth = this.container.offsetWidth;
+        const containerHeight = this.container.offsetHeight;
+
+        // Clear existing
+        this.container.innerHTML = '';
+        this.beams = [];
+
+        const num = this.options.beamsPerSide;
+        const spacing = containerHeight / (num + 1);
+        const beamWidth = 120;      // vertical width
+        const leftX = this.options.gapFromEdge;
+        const rightX = containerWidth - beamWidth - this.options.gapFromEdge;
+
+        // Helper to make a beam
+        const makeBeam = (x, targetCenterY, index, sideOffsetDelayMs) => {
+            const beam = document.createElement('div');
+            beam.className = 'beam';
+
+            // Start above the viewport
+            const startY = -450; // slightly above
+            const targetTop = Math.max(0, targetCenterY - 200); // half of 400 height
+
+            const startDelay = sideOffsetDelayMs + index * 450; // cascade one-by-one per side
+            const speed = this.options.dropSpeed; // constant speed for deterministic stop
+
+            beam.animationData = {
+                x,
+                y: startY,
+                targetY: targetTop,
+                startTime: Date.now() + startDelay,
+                started: false,
+                stopped: false,
+                speed,
+            };
+
+            beam.style.left = x + 'px';
+            beam.style.top = startY + 'px';
+
+            this.container.appendChild(beam);
+            this.beams.push(beam);
+        };
+
+        // Left side
+        for (let i = 0; i < num; i++) {
+            const centerY = spacing * (i + 1);
+            makeBeam(leftX, centerY, i, 0);
+        }
+        // Right side (slightly delayed after left starts)
+        for (let i = 0; i < num; i++) {
+            const centerY = spacing * (i + 1);
+            makeBeam(rightX, centerY, i, 300); // slight offset so sides don't start exactly same time
+        }
+    }
+    
+    startAnimation() {
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        const animate = (currentTime) => {
+            if (!this.lastTime) this.lastTime = currentTime;
+            const deltaTime = currentTime - this.lastTime;
+            this.lastTime = currentTime;
+
+            if (!this.allStopped) {
+                this.updateBeams(deltaTime);
+                this.animationId = requestAnimationFrame(animate);
+            }
+        };
+        this.animationId = requestAnimationFrame(animate);
+    }
+    
+    updateBeams(deltaTime) {
+        const now = Date.now();
+        let allStopped = true;
+        this.beams.forEach((beam) => {
+            const data = beam.animationData;
+            if (data.stopped) return; // already at final position
+            if (now < data.startTime) { allStopped = false; return; } // not yet started
+
+            // Move down until targetY
+            const distance = data.speed * deltaTime; // pixels to move this frame
+            data.y += distance;
+            if (data.y >= data.targetY) {
+                data.y = data.targetY;
+                data.stopped = true;
+            } else {
+                allStopped = false;
+            }
+
+            beam.style.top = data.y + 'px';
+        });
+
+        this.allStopped = allStopped;
+        if (allStopped && this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null; // stop animating once all are in place
+        }
+    }
+    
+    destroy() {
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        this.beams.forEach(b => b.remove());
+        this.beams = [];
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('beams-container');
+    if (container) {
+        try {
+            const beams = new BeamsBackground(container);
+            window.beamsBackground = beams;
+        } catch (e) {
+            console.error('Error creating beams background:', e);
+        }
+    }
+});
+</script>
+{% endblock %}

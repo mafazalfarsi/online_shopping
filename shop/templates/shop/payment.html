@@ -410,7 +410,79 @@
             transform: translateY(-2px);
         }
         
-        @media (max-width: 768px) {
+        .saved-payment-section {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .saved-payment-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .saved-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .saved-card-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .saved-card-option:hover {
+            background: rgba(102, 126, 234, 0.15);
+            transform: translateX(5px);
+        }
+
+        .saved-card-option input[type="radio"] {
+            transform: scale(1.2);
+            accent-color: #667eea;
+        }
+
+        .card-info {
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .use-saved-card-btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .use-saved-card-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .divider {
+            border-top: 1px solid #dee2e6;
+            margin: 20px 0;
+        }
+           
+          @media (max-width: 768px) {
             .payment-container {
                 margin: 20px;
                 padding: 30px 20px;
@@ -485,6 +557,29 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Saved Payment Methods Section -->
+            {% if saved_cards %}
+            <div class="saved-payment-section">
+                <h3>Use Saved Payment Method</h3>
+                <div class="saved-cards">
+                    {% for card in saved_cards %}
+                    <div class="saved-card-option">
+                        <input type="radio" name="saved_payment" id="card_{{ card.id }}" value="{{ card.id }}">
+                        <label for="card_{{ card.id }}">
+                            <div class="card-info">
+                                <strong>•••• •••• •••• {{ card.last_four }}</strong><br>
+                                <span>Expires: {{ card.expiry_month }}/{{ card.expiry_year }}</span><br>
+                                <span>{{ card.cardholder_name }}</span>
+                            </div>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="use-saved-card-btn" onclick="useSavedCard()">Use Selected Card</button>
+                <hr class="divider">
+            </div>
+            {% endif %}
             
             <div class="payment-methods">
                 <div class="payment-method" onclick="selectPayment('thawani')">
@@ -573,24 +668,62 @@
         let selectedPayment = null;
         
         function selectPayment(method) {
-            // Remove selected class from all methods
-            document.querySelectorAll('.payment-method').forEach(method => {
-                method.classList.remove('selected');
-            });
-            
-            // Hide all forms
-            document.querySelectorAll('.payment-form').forEach(form => {
-                form.classList.remove('active');
-            });
-            
-            // Add selected class to clicked method
-            event.currentTarget.classList.add('selected');
-            
-            // Show the corresponding form
-            const formId = method + '-form';
-            document.getElementById(formId).classList.add('active');
-            
+            document.querySelectorAll('.payment-method').forEach(pm => pm.classList.remove('selected'));
+            document.getElementById(`${method}-form`).classList.add('active');
             selectedPayment = method;
+        }
+
+        function useSavedCard() {
+            const selectedCard = document.querySelector('input[name="saved_payment"]:checked');
+            if (!selectedCard) {
+                alert('Please select a payment method first.');
+                return;
+            }
+            
+            const selectedCardId = selectedCard.value;
+            
+            // Select the credit card payment method
+            selectPayment('card');
+            
+            // Get card details from the selected card
+            const cardElement = document.getElementById(`card_${selectedCardId}`);
+            const cardInfo = cardElement.querySelector('.card-info');
+            
+            // Extract card information
+            const cardType = cardInfo.querySelector('strong').textContent.split(' •••• •••• •••• ')[0];
+            const lastFour = cardInfo.querySelector('strong').textContent.split(' •••• •••• •••• ')[1];
+            const expiry = cardInfo.querySelector('span').textContent.split('Expires: ')[1];
+            const cardholderName = cardInfo.querySelectorAll('span')[1].textContent;
+            
+            // Fill in the card form with saved information
+            document.getElementById('card-number').value = `•••• •••• •••• ${lastFour}`;
+            const expiryInput = document.getElementById('expiry');
+            expiryInput.value = expiry;
+            document.getElementById('card-name').value = cardholderName;
+            
+            // Disable fields that are pre-filled from saved card
+            document.getElementById('card-number').disabled = true;
+            expiryInput.disabled = true;
+            document.getElementById('card-name').disabled = true;
+            
+            // Add a note about CVV requirement
+            const cvvField = document.getElementById('cvv');
+            cvvField.placeholder = 'CVV required for saved card';
+            cvvField.style.borderColor = '#667eea';
+            
+            // Add hidden field to indicate we're using a saved card
+            let hiddenField = document.getElementById('saved_card_id');
+            if (!hiddenField) {
+                hiddenField = document.createElement('input');
+                hiddenField.type = 'hidden';
+                hiddenField.name = 'saved_card_id';
+                hiddenField.id = 'saved_card_id';
+                document.querySelector('.payment-container').appendChild(hiddenField);
+            }
+            hiddenField.value = selectedCardId;
+            
+            // Show success message
+            alert(`Using saved ${cardType} card ending in ${lastFour}. Please enter the CVV to continue.`);
         }
         
         function placeOrder() {

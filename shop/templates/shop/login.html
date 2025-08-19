@@ -1,295 +1,403 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login - TechMart</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .navbar {
-            background: white;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            padding: 15px 0;
-        }
-        
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-        }
-        
-        .brand-logo {
-            font-size: 2.4em;
-            font-weight: 800;
-            text-decoration: none;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .brand-logo:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
-        }
-        
-        .login-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .login-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 450px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px;
-            text-align: center;
-            color: white;
-        }
-        
-        .login-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-        
-        .login-title {
-            font-size: 2.2em;
-            font-weight: 300;
-            margin-bottom: 10px;
-        }
-        
-        .login-subtitle {
-            font-size: 1em;
-            opacity: 0.9;
-        }
-        
-        .login-body {
-            padding: 40px;
-        }
-        
-        .back-link {
-            display: inline-block;
-            color: #667eea;
-            text-decoration: none;
-            margin-bottom: 30px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .back-link:hover {
-            color: #5a6fd8;
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1em;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-            background: white;
-            color: #333;
-            box-sizing: border-box;
-        }
-        
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .signup-link {
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        .signup-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-        
-        .error-message {
-            background: #ff6b6b;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        .success-message {
-            background: #51cf66;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        @media (max-width: 480px) {
-            .login-card {
-                margin: 20px;
-            }
-            
-            .login-header {
-                padding: 30px 20px;
-            }
-            
-            .login-body {
-                padding: 30px 20px;
-            }
-            
-            .login-title {
-                font-size: 1.8em;
-            }
-            
-            .form-control {
-                padding: 12px 15px;
-                font-size: 14px;
-            }
-            
-            .login-btn {
-                padding: 12px 20px;
-                font-size: 14px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="brand">
-                <a href="{% url 'home' %}" class="brand-logo">TechMart</a>
-            </div>
-        </div>
-    </nav>
+{% extends 'shop/base.html' %}
+
+{% block title %}Login - TechMart{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Beams background styles */
+    #beams-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+        background: #000000;
+        overflow: hidden;
+    }
     
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="login-icon">👤</div>
-                <h1 class="login-title">Welcome Back</h1>
-                <p class="login-subtitle">Sign in to your TechMart account</p>
-            </div>
-            
-            <div class="login-body">
+    .beam {
+        position: absolute;
+        width: 400px;
+        height: 120px;
+        background: linear-gradient(45deg, 
+        rgba(65, 0, 22, 0.8), 
+        rgba(99, 23, 42, 0.9), 
+        rgba(61, 0, 19, 0.8)
+        );
+        border-radius: 60px;
+        box-shadow: 
+            0 0 30px rgba(139, 0, 139, 0.6),
+            0 0 60px rgba(220, 20, 60, 0.4),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
+        opacity: 0.85;
+        transform: none;
+        filter: blur(1px);
+        transition: none;
+    }
+
+    .login-container {
+        display: flex;
+        align-items: flex-start; /* anchor from top so panel sits higher */
+        justify-content: center;
+        min-height: calc(100vh - 80px);
+        padding: 140px 16px 24px; /* push it up between the red shapes */
+        background: transparent;
+        position: relative;
+        z-index: 1; /* keep content above beams */
+    }
+    
+    .login-card {
+        background: rgba(6, 0, 16, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        overflow: visible;
+        width: 100%;
+        max-width: 1300px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgb(78, 46, 56);
+        position: relative;
+        transition: all 0.3s ease;
+        
+        /* Glow effect variables */
+        --glow-x: 50%;
+        --glow-y: 50%;
+        --glow-intensity: 0;
+        --glow-radius: 160px;
+        --purple-glow: rgb(99, 0, 33);
+        --outer-intensity: 0;
+    }
+
+    /* Outer ambient glow following the mouse (outside the border) */
+    .login-card::before {
+        content: '';
+        position: absolute;
+        inset: -44px;
+        border-radius: calc(20px + 44px);
+        background: radial-gradient(240px circle at var(--glow-x) var(--glow-y),
+            rgba(220, 40, 100, 0.22) 0%,
+            rgba(220, 40, 100, 0.12) 40%,
+            rgba(220, 40, 100, 0.04) 70%,
+            transparent 80%);
+        filter: blur(12px);
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity .2s ease;
+        opacity: var(--outer-intensity, 0);
+        mix-blend-mode: screen;
+    }
+
+    /* Border glow effect */
+    .login-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 4px;
+        background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.35)) 0%,
+            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.2)) 30%,
+            transparent 60%);
+        border-radius: inherit;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 1;
+        opacity: 1;
+    }
+    
+    .login-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+    }
+    
+    .login-card:hover {
+        box-shadow: 0 4px 20px rgba(82, 9, 27, 0.4), 0 0 30px var(--purple-glow);
+    }
+    
+    .login-header {
+        padding: 16px 24px; /* reduced top spacing */
+        text-align: left;
+        color: white;
+        position: relative;
+        z-index: 2;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    .login-title {
+        font-size: 1.8em;
+        font-weight: 400;
+        margin: 0 0 6px 0;
+    }
+    
+    .login-subtitle {
+        font-size: 0.95em;
+        opacity: 0.9;
+        margin: 0;
+    }
+    
+    /* Two-column content area */
+    .login-content {
+        display: flex;
+        gap: 24px;
+        padding: 24px;
+    }
+
+    .login-left {
+        flex: 1 1 50%;
+        min-width: 360px;
+    }
+
+    .login-right {
+        flex: 1 1 50%;
+        min-height: 100%;
+        border-left: 1px solid rgba(255, 255, 255, 0.06);
+        /* Placeholder: you can add your content here later */
+    }
+    
+    .back-link {
+        display: inline-block;
+        color: rgb(133, 23, 60);
+        text-decoration: none;
+        margin-bottom: 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+        color:rgb(194, 54, 101);
+        text-decoration: underline;
+    }
+    
+    .form-group { margin-bottom: 18px; }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: white;
+        font-size: 1.05em;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        font-size: 16px;
+        outline: none;
+        transition: all 0.3s ease;
+        background: white;
+        color: #333;
+        box-sizing: border-box;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .login-btn {
+        width: 100%;
+        padding: 14px 24px;
+        background: linear-gradient(135deg,rgb(141, 35, 70) 0%, rgb(75, 6, 29) 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 8px 0 8px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(252, 94, 146, 0.3); }
+    
+    .signup-link { text-align: left; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; }
+    .signup-link a { color:rgb(133, 23, 60); text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+    .signup-link a:hover { text-decoration: underline; }
+
+    .error-message { background: #ff6b6b; color: white; padding: 12px; border-radius: 10px; margin-bottom: 16px; text-align: center; font-weight: 500; }
+    .success-message { background: #51cf66; color: white; padding: 12px; border-radius: 10px; margin-bottom: 16px; text-align: center; font-weight: 500; }
+    
+    @media (max-width: 900px) {
+        .login-content { flex-direction: column; }
+        .login-right { border-left: none; min-height: 0; }
+        .login-left { min-width: 0; }
+        .login-container { align-items: center; padding-top: 100px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="beams-container"></div>
+<div class="login-container">
+    <div class="login-card" id="login-card">
+        <div class="login-header">
+            <h1 class="login-title">Welcome Back</h1>
+            <p class="login-subtitle">Sign in to your TechMart account</p>
+        </div>
+
+        <div class="login-content">
+            <div class="login-left">
                 <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
-                
+
                 {% if error_message %}
-                <div class="error-message">
-                    {{ error_message }}
-                </div>
+                <div class="error-message">{{ error_message }}</div>
                 {% endif %}
-                
                 {% if success_message %}
-                <div class="success-message">
-                    {{ success_message }}
-                </div>
+                <div class="success-message">{{ success_message }}</div>
                 {% endif %}
-                
+
                 <form method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
                     </div>
-                    
                     <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
                     </div>
-                    
-                    <button type="submit" class="login-btn">
-                        👤 Sign In
-                    </button>
+                    <button type="submit" class="login-btn">Sign In</button>
                 </form>
-                
-                <div class="signup-link">
-                    Don't have an account? <a href="{% url 'signup' %}">Sign up</a>
-                </div>
+
+                <div class="signup-link">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></div>
             </div>
+
+            <div class="login-right"><!-- Left empty intentionally; add your content later --></div>
         </div>
     </div>
-</body>
-</html> 
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Global spotlight and glow tracking system (exact same as category page)
+const DEFAULT_SPOTLIGHT_RADIUS = 300;
+const DEFAULT_GLOW_COLOR = "138, 20, 48";
+
+const calculateSpotlightValues = (radius) => ({ proximity: radius * 0.5, fadeDistance: radius * 0.75 });
+
+const updateCardGlowProperties = (card, mouseX, mouseY, glow, radius) => {
+    const rect = card.getBoundingClientRect();
+    const relativeX = ((mouseX - rect.left) / rect.width) * 100;
+    const relativeY = ((mouseY - rect.top) / rect.height) * 100;
+    card.style.setProperty("--glow-x", `${relativeX}%`);
+    card.style.setProperty("--glow-y", `${relativeY}%`);
+    card.style.setProperty("--glow-intensity", glow.toString());
+    card.style.setProperty("--glow-radius", `${radius}px`);
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const loginCard = document.getElementById('login-card');
+    if (loginCard) {
+        const handleMouseMove = (e) => {
+            const rect = loginCard.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            loginCard.style.setProperty('--glow-x', `${x}%`);
+            loginCard.style.setProperty('--glow-y', `${y}%`);
+            loginCard.style.setProperty('--glow-intensity', '1');
+            loginCard.style.setProperty('--outer-intensity', '1');
+            loginCard.style.setProperty('--glow-radius', '240px');
+        };
+        const handleMouseLeave = () => {
+            loginCard.style.setProperty('--glow-intensity', '0');
+            loginCard.style.setProperty('--outer-intensity', '0');
+            loginCard.style.setProperty('--glow-radius', '200px');
+        };
+        loginCard.addEventListener('mousemove', handleMouseMove);
+        loginCard.addEventListener('mouseleave', handleMouseLeave);
+    }
+});
+
+// Side-stacked beams (same mechanic as contact page)
+class BeamsBackground {
+    constructor(container, options = {}) {
+        this.container = container;
+        this.options = {
+            beamsPerSide: 4,
+            dropSpeed: 0.5,
+            gapFromEdge: 30,
+        };
+        this.beams = [];
+        this.animationId = null;
+        this.lastTime = 0;
+        this.allStopped = false;
+        this.init();
+    }
+    init() { this.createBeams(); this.startAnimation(); }
+
+    createBeams() {
+        const containerWidth = this.container.offsetWidth;
+        const containerHeight = this.container.offsetHeight;
+        this.container.innerHTML = '';
+        this.beams = [];
+        const num = this.options.beamsPerSide;
+        const spacing = containerHeight / (num + 1);
+        const beamLength = 400;
+        const beamThickness = 120;
+        const leftX = this.options.gapFromEdge;
+        const rightX = containerWidth - beamLength - this.options.gapFromEdge;
+        const makeBeam = (x, targetCenterY, index, sideOffsetDelayMs) => {
+            const beam = document.createElement('div');
+            beam.className = 'beam';
+            const startY = -200;
+            const targetTop = Math.max(0, targetCenterY - (beamThickness/2));
+            const startDelay = sideOffsetDelayMs + index * 450;
+            const speed = this.options.dropSpeed;
+            beam.animationData = { x, y: startY, targetY: targetTop, startTime: Date.now() + startDelay, started: false, stopped: false, speed };
+            beam.style.left = x + 'px';
+            beam.style.top = startY + 'px';
+            this.container.appendChild(beam);
+            this.beams.push(beam);
+        };
+        for (let i = 0; i < num; i++) { const centerY = spacing * (i + 1); makeBeam(leftX, centerY, i, 0); }
+        for (let i = 0; i < num; i++) { const centerY = spacing * (i + 1); makeBeam(rightX, centerY, i, 300); }
+    }
+
+    startAnimation() {
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        const animate = (t) => {
+            if (!this.lastTime) this.lastTime = t;
+            const dt = t - this.lastTime; this.lastTime = t;
+            if (!this.allStopped) { this.updateBeams(dt); this.animationId = requestAnimationFrame(animate); }
+        };
+        this.animationId = requestAnimationFrame(animate);
+    }
+
+    updateBeams(deltaTime) {
+        const now = Date.now();
+        let allStopped = true;
+        this.beams.forEach((beam) => {
+            const d = beam.animationData;
+            if (d.stopped) return;
+            if (now < d.startTime) { allStopped = false; return; }
+            const distance = d.speed * deltaTime;
+            d.y += distance;
+            if (d.y >= d.targetY) { d.y = d.targetY; d.stopped = true; }
+            else { allStopped = false; }
+            beam.style.top = d.y + 'px';
+        });
+        this.allStopped = allStopped;
+        if (allStopped && this.animationId) { cancelAnimationFrame(this.animationId); this.animationId = null; }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const beamsContainer = document.getElementById('beams-container');
+    if (beamsContainer) {
+        try { window.loginBeams = new BeamsBackground(beamsContainer); } catch(e) { console.error(e); }
+    }
+});
+</script>
+{% endblock %} 

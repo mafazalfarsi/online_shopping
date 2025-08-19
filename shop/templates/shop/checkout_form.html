@@ -267,6 +267,75 @@
             transform: translateY(-2px);
         }
         
+        .saved-addresses-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .saved-addresses-section h3 {
+            font-size: 1.5em;
+            color: #555;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .address-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .address-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .address-option:hover {
+            background-color: #f0f0f0;
+        }
+
+        .address-option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: #667eea;
+        }
+
+        .use-saved-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .use-saved-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .divider {
+            margin: 20px 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
+        
         @media (max-width: 768px) {
             .checkout-container {
                 margin: 20px;
@@ -318,7 +387,29 @@
     <div class="main-content">
         <div class="checkout-container">
             <div class="checkout-title">Enter Your Shipping Information</div>
-            <form method="post" class="checkout-form">
+            
+            <!-- Saved Addresses Section -->
+            {% if saved_addresses %}
+            <div class="saved-addresses-section">
+                <h3>Use Saved Address</h3>
+                <div class="address-options">
+                    {% for address in saved_addresses %}
+                    <div class="address-option">
+                        <input type="radio" name="saved_address" id="address_{{ address.id }}" value="{{ address.id }}">
+                        <label for="address_{{ address.id }}">
+                            <strong>{{ address.name }}</strong><br>
+                            {{ address.address }}, {{ address.city }} {{ address.postal_code }}<br>
+                            Phone: {{ address.phone }} | Email: {{ address.email }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="use-saved-btn" onclick="useSavedAddress()">Use Selected Address</button>
+                <hr class="divider">
+            </div>
+            {% endif %}
+            
+            <form method="post" class="checkout-form" id="checkout-form">
                 {% csrf_token %}
                 <label for="name">Full Name</label>
                 <input type="text" name="name" id="name" required>
@@ -342,5 +433,83 @@
             </form>
         </div>
     </div>
+    
+    <script>
+        function useSavedAddress() {
+            const selectedAddress = document.querySelector('input[name="saved_address"]:checked');
+            if (!selectedAddress) {
+                alert('Please select an address first.');
+                return;
+            }
+            
+            const addressId = selectedAddress.value;
+            
+            // Fetch the selected address details
+            fetch(`/get-address-details/${addressId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const address = data.address;
+                        
+                        // Fill in the form fields
+                        document.getElementById('name').value = address.name;
+                        document.getElementById('address').value = address.address;
+                        document.getElementById('city').value = address.city;
+                        document.getElementById('postal_code').value = address.postal_code;
+                        document.getElementById('phone').value = address.phone;
+                        
+                        // Disable the form fields since we're using a saved address
+                        document.getElementById('name').disabled = true;
+                        document.getElementById('address').disabled = true;
+                        document.getElementById('city').disabled = true;
+                        document.getElementById('postal_code').disabled = true;
+                        document.getElementById('phone').disabled = true;
+                        
+                        // Add a hidden field to indicate we're using a saved address
+                        let hiddenField = document.getElementById('saved_address_id');
+                        if (!hiddenField) {
+                            hiddenField = document.createElement('input');
+                            hiddenField.type = 'hidden';
+                            hiddenField.name = 'saved_address_id';
+                            hiddenField.id = 'saved_address_id';
+                            document.getElementById('checkout-form').appendChild(hiddenField);
+                        }
+                        hiddenField.value = addressId;
+                        
+                        // Show success message
+                        alert('Address loaded successfully! You can now proceed to payment.');
+                    } else {
+                        alert('Error loading address details.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading address details.');
+                });
+        }
+        
+        // Allow users to manually edit fields if they want to change saved address
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('checkout-form');
+            const inputs = form.querySelectorAll('input, textarea');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    // If user starts typing, remove the saved address selection
+                    const savedAddressRadios = document.querySelectorAll('input[name="saved_address"]');
+                    savedAddressRadios.forEach(radio => radio.checked = false);
+                    
+                    // Remove the hidden field
+                    const hiddenField = document.getElementById('saved_address_id');
+                    if (hiddenField) {
+                        hiddenField.remove();
+                    }
+                    
+                    // Re-enable all fields
+                    inputs.forEach(input => input.disabled = false);
+                });
+            });
+        });
+    </script>
 </body>
 </html>
