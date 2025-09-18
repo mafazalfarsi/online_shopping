@@ -1029,8 +1029,21 @@ function proceedWithThawani() {
                 // Handle Thawani Pay
                 proceedWithThawani();
             } else {
-                // For other payment methods, redirect to order confirmation
-                window.location.href = "{% url 'order_confirmation' %}";
+                // Persist chosen method server-side before redirecting
+                const formData = new FormData();
+                formData.append('method', selectedPayment);
+                fetch('{% url 'set_payment_method' %}', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                    body: formData
+                }).then(() => {
+                    // Also pass a query param as a belt-and-suspenders fallback
+                    const pm = selectedPayment === 'cod' ? 'cod' : selectedPayment;
+                    window.location.href = `{% url 'order_confirmation' %}?pm=${pm}`;
+                }).catch(() => {
+                    const pm = selectedPayment === 'cod' ? 'cod' : selectedPayment;
+                    window.location.href = `{% url 'order_confirmation' %}?pm=${pm}`;
+                });
             }
         }
         

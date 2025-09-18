@@ -192,6 +192,34 @@ def checkout(request):
             'phone': request.POST.get('phone'),
             'saved_address_id': request.POST.get('saved_address_id'),  # New field
         }
+        
+        # If a saved address was chosen, hydrate full address/contact fields into session
+        saved_address_id = request.POST.get('saved_address_id')
+        if saved_address_id:
+            try:
+                username = request.session.get('username')
+                user, _ = User.objects.get_or_create(username=username)
+                sa = SavedAddress.objects.get(id=int(saved_address_id), user=user)
+                # Update order_info with saved address details
+                order_info = request.session.get('order_info', {})
+                order_info.update({
+                    'name': sa.name or order_info.get('name'),
+                    'address': sa.address or order_info.get('address', ''),
+                    'city': sa.city or order_info.get('city', ''),
+                    'postal_code': sa.postal_code or order_info.get('postal_code', ''),
+                    'phone': sa.phone or order_info.get('phone', ''),
+                    'email': sa.email,
+                })
+                request.session['order_info'] = order_info
+                # Also set top-level session fields used by Thawani/order creation
+                request.session['customer_name'] = order_info.get('name')
+                request.session['customer_email'] = order_info.get('email', request.session.get('customer_email'))
+                request.session['customer_phone'] = order_info.get('phone', request.session.get('customer_phone'))
+                request.session['address'] = order_info.get('address')
+                request.session['city'] = order_info.get('city')
+                request.session['postal_code'] = order_info.get('postal_code')
+            except (SavedAddress.DoesNotExist, ValueError):
+                pass
         # Reset order creation flags for new checkout
         request.session['order_created'] = False
         request.session['thawani_order_created'] = False
@@ -343,7 +371,65 @@ def thawani_order_confirmation(request):
         except Order.DoesNotExist:
             pass
     
-    # If no order found, try to get the most recent order
+    # If no order found yet, create it from session cart as a final fallback
+    if not order and order_id:
+        cart = request.session.get('cart', {})
+        if cart and not request.session.get('thawani_order_created'):
+            try:
+                # Calculate total
+                total_amount = 0
+                for cart_key, quantity in cart.items():
+                    if '-' not in cart_key:
+                        product = Product.objects.get(id=int(cart_key))
+                        total_amount += float(product.price) * quantity
+                    else:
+                        variant_id, size_id = cart_key.split('-')
+                        variant = ProductVariant.objects.get(id=int(variant_id))
+                        total_amount += float(variant.price) * quantity
+                # Customer info fallbacks
+                order_info = request.session.get('order_info', {}) or {}
+                customer_name = request.session.get('customer_name') or order_info.get('name', 'Guest')
+                customer_email = request.session.get('customer_email') or order_info.get('email', 'guest@example.com')
+                customer_phone = request.session.get('customer_phone') or order_info.get('phone') or '+96800000000'
+                address = request.session.get('address') or order_info.get('address', '')
+                city = request.session.get('city') or order_info.get('city', '')
+                postal_code = request.session.get('postal_code') or order_info.get('postal_code', '')
+                # Create order
+                order = Order.objects.create(
+                    order_id=order_id,
+                    customer_name=customer_name,
+                    customer_email=customer_email,
+                    customer_phone=customer_phone,
+                    address=address,
+                    city=city,
+                    postal_code=postal_code,
+                    total_amount=total_amount,
+                    delivery_fee=Decimal('0.00'),
+                    payment_method='Thawani Pay',
+                    status='Pending'
+                )
+                # Items
+                for cart_key, quantity in cart.items():
+                    try:
+                        if '-' not in cart_key:
+                            product = Product.objects.get(id=int(cart_key))
+                            OrderItem.objects.create(order=order, product_name=product.name, product_id=product.id, quantity=quantity, price=product.price)
+                        else:
+                            variant_id, size_id = cart_key.split('-')
+                            variant = ProductVariant.objects.get(id=int(variant_id))
+                            size = ProductSize.objects.get(id=int(size_id))
+                            product = variant.product
+                            OrderItem.objects.create(order=order, product_name=f"{product.name} - {variant.color_name} (Size {size.size})", product_id=product.id, quantity=quantity, price=variant.price)
+                    except (ValueError, Product.DoesNotExist, ProductVariant.DoesNotExist, ProductSize.DoesNotExist):
+                        continue
+                request.session['thawani_order_created'] = True
+                request.session['last_order_id'] = order_id
+                # Clear cart after creation
+                request.session['cart'] = {}
+            except Exception:
+                pass
+
+    # If still no order, try to get the most recent order
     if not order:
         try:
             order = Order.objects.filter(
@@ -356,6 +442,12 @@ def thawani_order_confirmation(request):
     if order:
         # Get order items
         order_items = OrderItem.objects.filter(order=order)
+        # Persist for order history page
+        request.session['thawani_order_id'] = order.order_id
+        request.session['last_order_id'] = order.order_id
+        # Ensure cart is cleared after successful payment and mark created
+        request.session['cart'] = {}
+        request.session['thawani_order_created'] = True
         
         context = {
             'order': order,
@@ -378,6 +470,19 @@ def thawani_order_confirmation(request):
 
 def order_confirmation(request):
     order_info = request.session.get('order_info')
+    # Fallback: allow query parameter to set payment method (e.g., from payment page)
+    pm = request.GET.get('pm')
+    if pm:
+        normalized = pm
+        if pm.lower() in ['cod', 'cash', 'cash on delivery']:
+            normalized = 'Cash on Delivery'
+        request.session['payment_method'] = normalized
+    
+    # Defensive default: if no gateway payment was used, assume COD
+    if not request.session.get('thawani_order_id'):
+        current_pm = request.session.get('payment_method')
+        if (not current_pm) or (current_pm == 'Credit/Debit Card' and (not pm or pm.lower() in ['cod', 'cash', 'cash on delivery'])):
+            request.session['payment_method'] = 'Cash on Delivery'
     
     # Get cart info for display
     cart = request.session.get('cart', {})
@@ -438,15 +543,23 @@ def order_confirmation(request):
             random_suffix = random.randint(1000, 9999)
             order_id = f"ORD{timestamp}{random_suffix}"
         
+        # Prepare safe customer details
+        safe_customer_name = request.session.get('customer_name') or order_info.get('name', 'Guest')
+        safe_customer_email = request.session.get('customer_email') or order_info.get('email', '')
+        safe_customer_phone = request.session.get('customer_phone') or order_info.get('phone') or ''
+        safe_address = order_info.get('address') or ''
+        safe_city = order_info.get('city') or ''
+        safe_postal_code = order_info.get('postal_code') or ''
+
         # Create order
         order = Order.objects.create(
             order_id=order_id,
-            customer_name=request.session.get('customer_name', order_info['name']),
-            customer_email=request.session.get('customer_email', order_info.get('email','')),
-            customer_phone=request.session.get('customer_phone', order_info['phone']),
-            address=order_info['address'],
-            city=order_info['city'],
-            postal_code=order_info['postal_code'],
+            customer_name=safe_customer_name,
+            customer_email=safe_customer_email,
+            customer_phone=safe_customer_phone,
+            address=safe_address,
+            city=safe_city,
+            postal_code=safe_postal_code,
             total_amount=final_total,
             delivery_fee=delivery_fee,
             payment_method=request.session.get('payment_method', 'Credit/Debit Card')
@@ -480,7 +593,7 @@ def order_confirmation(request):
     request.session['cart'] = {}
     request.session['order_created'] = False  # Reset for next order
     request.session['thawani_order_created'] = False  # Reset Thawani order creation flag
-    request.session['thawani_order_id'] = None  # Reset Thawani order ID
+    # Keep thawani_order_id so order history can include the most recent Thawani order
     
     return render(request, 'shop/order_confirmation.html', context)
 
@@ -804,6 +917,18 @@ def order_history(request):
             orders = (orders | recent).distinct().order_by('-order_date')
         except Order.DoesNotExist:
             pass
+    
+    # Fallbacks to ensure the user sees something even if identity fields didn't match
+    if not orders.exists():
+        from django.utils import timezone
+        from datetime import timedelta
+        since = timezone.now() - timedelta(days=1)
+        # Include recent orders and any recent Thawani orders
+        recent_time = Order.objects.filter(order_date__gte=since)
+        recent_thawani = Order.objects.filter(order_date__gte=since, payment_method__icontains='thawani')
+        orders = (recent_time | recent_thawani).distinct().order_by('-order_date')
+    if not orders.exists():
+        orders = Order.objects.all().order_by('-order_date')[:20]
     
     # Get all top-level categories for navigation
     categories = Category.objects.filter(parent__isnull=True)
@@ -1426,7 +1551,7 @@ def thawani_success(request):
                         total_amount=total_amount,
                         delivery_fee=Decimal('0.00'),
                         payment_method='Thawani Pay (Mock)',
-                        status='Paid'
+                        status='Pending'
                         )
                         
                         # Store order ID in session for confirmation page
@@ -1505,23 +1630,29 @@ def thawani_success(request):
                         # Create order (only if not already created)
                         if not request.session.get('thawani_order_created'):
                             order_id = request.session.get('thawani_order_id', 'THW' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6)))
+                            order_info = request.session.get('order_info', {}) or {}
+                            customer_name = request.session.get('customer_name') or order_info.get('name', 'Guest')
+                            customer_email = request.session.get('customer_email') or order_info.get('email', 'guest@example.com')
+                            customer_phone = request.session.get('customer_phone') or order_info.get('phone') or '+96800000000'
+                            address = request.session.get('address') or order_info.get('address', '')
+                            city = request.session.get('city') or order_info.get('city', '')
+                            postal_code = request.session.get('postal_code') or order_info.get('postal_code', '')
+
                             order = Order.objects.create(
                                 order_id=order_id,
-                                customer_name=request.session.get('customer_name', 'Guest'),
-                                customer_email=request.session.get('customer_email', 'guest@example.com'),
-                                customer_phone=request.session.get('customer_phone', '+96800000000'),
-                                address=request.session.get('address', ''),
-                                city=request.session.get('city', ''),
-                                postal_code=request.session.get('postal_code', ''),
+                                customer_name=customer_name,
+                                customer_email=customer_email,
+                                customer_phone=customer_phone,
+                                address=address,
+                                city=city,
+                                postal_code=postal_code,
                                 total_amount=total_amount,
                                 delivery_fee=Decimal('0.00'),
                                 payment_method='Thawani Pay',
-                                status='Paid'
+                                status='Pending'
                             )
                         
                             # Store order ID in session for confirmation page
-                            request.session['thawani_order_id'] = order_id
-                            request.session['last_order_id'] = order_id
                             request.session['thawani_order_id'] = order_id
                             request.session['last_order_id'] = order_id
                             request.session['thawani_order_created'] = True
@@ -1604,19 +1735,28 @@ def thawani_success(request):
                     import string
                     mock_session_id = 'MOCK_' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
                     
+                    order_info = request.session.get('order_info', {}) or {}
+                    customer_name = request.session.get('customer_name') or order_info.get('name', 'Guest')
+                    customer_email = request.session.get('customer_email') or order_info.get('email', 'guest@example.com')
+                    customer_phone = request.session.get('customer_phone') or order_info.get('phone') or '+96800000000'
+                    address = request.session.get('address') or order_info.get('address', '')
+                    city = request.session.get('city') or order_info.get('city', '')
+                    postal_code = request.session.get('postal_code') or order_info.get('postal_code', '')
+
                     order = Order.objects.create(
                         order_id=mock_session_id,
-                        customer_name='Customer',
-                        customer_email='customer@example.com',
-                        customer_phone='+96812345678',
-                        address='Customer Address',
-                        city='Muscat',
-                        postal_code='12345',
+                        customer_name=customer_name,
+                        customer_email=customer_email,
+                        customer_phone=customer_phone,
+                        address=address,
+                        city=city,
+                        postal_code=postal_code,
                         total_amount=total_amount,
                         delivery_fee=Decimal('0.00'),
                         payment_method='Thawani Pay',
-                        status='Paid'
+                        status='Pending'
                     )
+                    request.session['last_order_id'] = mock_session_id
                     
                     # Create order items
                     for cart_key, quantity in cart.items():
@@ -1723,7 +1863,7 @@ def thawani_mock_success(request):
                         total_amount=total_amount,
                         delivery_fee=Decimal('0.00'),
                         payment_method='Thawani Pay (Mock)',
-                        status='Paid'
+                        status='Pending'
                     )
                     
                     # Store order ID in session for confirmation page
@@ -2033,4 +2173,18 @@ def get_payment_details(request, payment_id):
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)})
 
+
+# Lightweight endpoint to set selected payment method in session
+@csrf_exempt
+@require_POST
+def set_payment_method(request):
+    method = request.POST.get('method', '').strip()
+    if not method:
+        return JsonResponse({'success': False, 'error': 'method required'}, status=400)
+    # Normalize common labels
+    normalized = method
+    if method.lower() in ['cod', 'cash', 'cash on delivery']:
+        normalized = 'Cash on Delivery'
+    request.session['payment_method'] = normalized
+    return JsonResponse({'success': True})
 
