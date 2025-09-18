@@ -13,7 +13,7 @@
 
         <!-- Search Bar -->
         <div class="search-section">
-            <form method="GET" action="{% url 'search_products' %}" class="form" novalidate>
+            <form method="GET" action="{% url 'search_products' %}" class="form" novalidate onfocusin="this.classList.add('is-focused')" onfocusout="this.classList.remove('is-focused')">
                 <button type="submit" aria-label="Search">
                     <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
                         <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -35,6 +35,7 @@
 {% endblock %}
 
 {% block extra_css %}
+<!-- CSS Updated: {{ "now"|date:"Y-m-d H:i:s" }} -->
 <style>
     /* Override base background for categories page */
     html, body {
@@ -42,16 +43,22 @@
         background-color: #000000 !important;
     }
     
-    /* Force black background on all elements */
-    * {
-        background-color: #000000 !important;
-    }
-    
+    /* Force black background on categories page content only */
     .categories-page {
         background: #000000 !important;
         background-color: #000000 !important;
         padding: 20px 0;
         min-height: 100vh;
+    }
+    
+    /* Ensure navbar and logo are not affected by black background */
+    .navbar,
+    .navbar *,
+    .brand-logo,
+    .brand-logo *,
+    .logo-text,
+    .logo-text * {
+        background-color: transparent !important;
     }
 
     .container {
@@ -89,55 +96,129 @@
         justify-content: center;
     }
 
-    /* Uiverse search - burgundy theme */
-    .form button { border: none; background: none; color: #8b8ba7; }
+    /* NUCLEAR OPTION - FORCE SEARCH BAR STYLING */
+    .search-section form.form,
+    .search-section .form,
+    .categories-page .search-section form.form,
+    .categories-page .search-section .form,
+    form.form,
     .form {
-      --timing: 0.3s;
-      --width-of-input: 500px;
-      --height-of-input: 48px;
-      --border-height: 2px;
-      --input-bg: rgba(0,0,0,0.5);
-      --border-color: rgb(112, 0, 28);
-      --border-radius: 30px;
-      --after-border-radius: 10px;
-      position: relative;
-      width: var(--width-of-input);
-      height: var(--height-of-input);
+      --timing: .3s !important;
+      --width-of-input: 500px !important;
+      --height-of-input: 48px !important;
+      --border-radius: 30px !important;
+      --after-border-radius: 10px !important;
+      position: relative !important;
+      width: 500px !important;
+      height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      padding: 0 0.8em !important;
+      border-radius: var(--border-radius) !important;
+      transition: border-radius .5s ease !important;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(139,0,46,0.4) 50%, rgba(112,0,28,0.3) 100%) !important;
+      backdrop-filter: blur(15px) !important;
+      border: 1px solid rgba(255,255,255,0.4) !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+      margin: 0 auto !important;
+    }
+    
+    /* COMPLETELY REMOVE ALL PSEUDO-ELEMENTS (but keep native focus outline behavior) */
+    .search-section form.form:before,
+    .search-section form.form:after,
+    .search-section .form:before,
+    .search-section .form:after,
+    .categories-page .search-section form.form:before,
+    .categories-page .search-section form.form:after,
+    .categories-page .search-section .form:before,
+    .categories-page .search-section .form:after,
+    form.form:before,
+    form.form:after {
+      display: none !important;
+      content: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    
+    /* FORCE BUTTON STYLING */
+    .search-section form.form button,
+    .search-section .form button,
+    form.form button,
+    .form button { 
+      border: none !important; 
+      background: none !important; 
+      color: #fff !important; 
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    
+    /* FORCE INPUT STYLING */
+    .search-section form.form .input,
+    .search-section .form .input,
+    .search-section form.form input,
+    .search-section .form input,
+    form.form .input,
+    form.form input,
+    .form .input,
+    .form input {
+      font-size: 1rem !important;
+      background-color: transparent !important;
+      width: 100% !important;
+      height: 100% !important;
+      padding: 0.7em 0.5em !important;
+      border: none !important;
+      color: #fff !important;
+      font-family: inherit !important;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    
+    .input::placeholder { 
+      color: rgba(255,255,255,0.7); 
+    }
+    
+    .reset { 
+      border: none; 
+      background: none; 
+      opacity: 0; 
+      visibility: hidden; 
+      color: #fff; 
+      cursor: pointer;
       display: flex;
       align-items: center;
-      padding-inline: 0.8em;
-      border-radius: var(--border-radius);
-      transition: border-radius 0.5s ease;
-      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(139,0,46,0.25) 100%);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.25);
+      justify-content: center;
     }
-    .input {
-      font-size: 1rem;
-      background-color: transparent;
-      width: 100%;
-      height: 100%;
-      padding-inline: 0.5em;
-      padding-block: 0.7em;
-      border: none;
-      color: #fff;
+    
+    .form input:not(:placeholder-shown) ~ .reset { 
+      opacity: 1; 
+      visibility: visible; 
     }
-    .input::placeholder { color: rgba(255,255,255,0.8); }
-    .form:before {
-      content: ""; position: absolute; background: var(--border-color);
-      transform: scaleX(0); transform-origin: center; width: 100%;
-      height: var(--border-height); left: 0; bottom: 0; border-radius: 1px;
-      transition: transform var(--timing) ease;
+    
+    .form svg { 
+      width: 17px; 
+      height: 17px;
+      color: #fff; 
     }
-    .form:focus-within { border-radius: var(--after-border-radius); }
-    .form:focus-within:before { transform: scale(1); }
-    .reset { border: none; background: none; opacity: 0; visibility: hidden; color:#fff; }
-    .form input:not(:placeholder-shown) ~ .reset { opacity: 1; visibility: visible; }
-    .form svg { width: 17px; margin-top: 3px; color:#fff; }
-    /* remove focus outline and bottom border on focus */
-    .form:before { display:none !important; }
-    .form:focus-within:before { display:none !important; }
-    .form, .form * { outline: none !important; box-shadow: none !important; }
+    
+    .form:focus-within,
+    .form.is-focused {
+      border-color: rgba(255,255,255,0.5) !important;
+      box-shadow: 0 4px 20px rgba(139,0,46,0.3) !important;
+      border-radius: var(--after-border-radius) !important;
+    }
+    
+    .form, .form * { 
+      outline: none !important; 
+    }
 
     /* Magic Bento Container */
     #magic-bento-container {
@@ -149,14 +230,14 @@
 
     /* Magic Bento CSS Variables */
     :root {
-        --hue: 27;
-        --sat: 69%;
+        --hue: 340;
+        --sat: 60%;
         --white: hsl(0, 0%, 100%);
-        --purple-primary: rgb(109, 7, 41);
-        --purple-glow: rgb(99, 0, 33);
-        --purple-border: rgb(192, 55, 85);
-        --border-color:rgb(78, 46, 56);
-        --background-dark: #060010;
+        --purple-primary: rgb(81, 34, 50);
+        --purple-glow: rgb(81, 34, 50);
+        --purple-border: rgb(120, 50, 75);
+        --border-color:rgb(60, 25, 35);
+        --background-dark: #0a0005;
         color-scheme: light dark;
     }
 
@@ -183,7 +264,7 @@
         max-width: 500px;
         padding: 2em;
         border-radius: 20px;
-        border: none;
+        border: 3px solid rgba(81, 34, 50, 0.35);
         background: var(--background-dark);
         font-weight: 300;
         overflow: hidden;
@@ -427,8 +508,8 @@
         inset: 0;
         padding: 6px;
         background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
-            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.35)) 0%,
-            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.2)) 30%,
+            rgba(81, 34, 50, calc(var(--glow-intensity) * 0.45)) 0%,
+            rgba(81, 34, 50, calc(var(--glow-intensity) * 0.28)) 30%,
             transparent 60%);
         border-radius: inherit;
         mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -447,11 +528,11 @@
         inset: -44px;
         border-radius: calc(20px + 44px);
         background: radial-gradient(240px circle at var(--glow-x) var(--glow-y),
-            rgba(220, 40, 100, 0.22) 0%,
-            rgba(220, 40, 100, 0.12) 40%,
-            rgba(220, 40, 100, 0.04) 70%,
+            rgba(81, 34, 50, 0.26) 0%,
+            rgba(81, 34, 50, 0.14) 40%,
+            rgba(81, 34, 50, 0.06) 70%,
             transparent 80%);
-        filter: blur(12px);
+        filter: blur(13px);
         pointer-events: none;
         z-index: 0;
         transition: opacity .2s ease;
@@ -468,7 +549,7 @@
     }
 
     .card--border-glow:hover {
-        box-shadow: 0 4px 20px rgba(82, 9, 27, 0.4), 0 0 30px var(--purple-glow);
+        box-shadow: 0 6px 24px rgba(82, 9, 27, 0.45), 0 0 40px var(--purple-glow);
     }
 
     .particle-container {
@@ -616,6 +697,40 @@
 
 {% block extra_js %}
 <script>
+// FORCE REMOVE ANY PROBLEMATIC SEARCH BAR ELEMENTS
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove any pseudo-elements or overlays
+    const searchForm = document.querySelector('.search-section .form');
+    if (searchForm) {
+        // Force remove any problematic styles
+        searchForm.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(139,0,46,0.4) 50%, rgba(112,0,28,0.3) 100%)';
+        searchForm.style.border = '1px solid rgba(255,255,255,0.4)';
+        searchForm.style.borderRadius = '30px';
+        searchForm.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+        
+        // Remove any unwanted pseudo-elements
+        const style = document.createElement('style');
+        style.textContent = `
+            .search-section .form:before,
+            .search-section .form:after,
+            .form:before,
+            .form:after {
+                display: none !important;
+                content: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                width: 0 !important;
+                height: 0 !important;
+                background: none !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+});
+</script>
+<script>
 // Load GSAP library dynamically
 function loadGSAP() {
     return new Promise((resolve, reject) => {
@@ -660,7 +775,7 @@ async function initializeMagicBento() {
                 clickEffect: true,
                 spotlightRadius: 300,
                 particleCount: 12,
-                glowColor: "243, 86, 113"
+                glowColor: "81, 34, 50"
             });
             console.log('Magic Bento created successfully:', magicBento);
         } else {
@@ -689,7 +804,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Magic Bento Component Implementation
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
-const DEFAULT_GLOW_COLOR = "132, 0, 255";
+const DEFAULT_GLOW_COLOR = "81, 34, 50";
 const MOBILE_BREAKPOINT = 768;
 
 // Make cardData available globally for navigation
@@ -735,14 +850,14 @@ window.cardDataForNavigation = [
     },
     {
         color: "#060010",
-        title: "Phone Accessories",
-        description: "Phone cases, tripods, and mobile gear",
-        label: "Mobile",
+        title: "Drones",
+        description: "Quadcopters, FPV drones, and essential parts",
+        label: "Drones",
         categoryId: 36,
         url: "/category/36/",
         subcategories: [
-            { name: "Phone Cases", url: "/category/37/", emoji: "📱" },
-            { name: "Tripods", url: "/category/38/", emoji: "📱" }
+            { name: "Drones", url: "/category/37/", emoji: "🛸" },
+            { name: "Drone Parts", url: "/category/38/", emoji: "⚙️" }
         ]
     }
 ];
@@ -1143,9 +1258,9 @@ class GlobalSpotlight {
 
             const targetOpacity =
                 minDistance <= proximity
-                    ? 0.8
+                    ? 0.9
                     : minDistance <= fadeDistance
-                        ? ((fadeDistance - minDistance) / (fadeDistance - proximity)) * 0.8
+                        ? ((fadeDistance - minDistance) / (fadeDistance - proximity)) * 0.9
                         : 0;
 
             gsap.to(this.spotlight, {

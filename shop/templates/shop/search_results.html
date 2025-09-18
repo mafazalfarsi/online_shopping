@@ -1,470 +1,351 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Search Results - TechMart</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
-        
-.navbar {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 15px 0;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-        
-.nav-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    padding: 0 40px;
-}
-        
-.brand {
-    display: flex;
-    align-items: center;
-}
+{% extends 'shop/base.html' %}
+{% load static %}
 
-.brand-logo {
-    font-size: 2.2em;
-    font-weight: bold;
-    color: #667eea;
-    text-decoration: none;
-    letter-spacing: 1px;
-}
-        
-        .nav-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-left: auto;
-            justify-content: flex-end;
-        }
-        
-.nav-categories {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
+{% block title %}Search Results - TechMart{% endblock %}
 
-.nav-left {
-    display: flex;
-    align-items: center;
-    gap: 40px;
-}
-        
-.nav-btn {
-    padding: 12px 24px;
-    background: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-        
-        
-.nav-btn:hover {
-    background: #0056b3;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-}
-        
-.logout-btn {
-    background: linear-gradient(135deg, #6f42c1, #ee5a24);
-}
+{% block content %}
+<div class="main-content">
+    <div class="page-header">
+        <h1 class="page-title">Search Results</h1>
+    </div>
 
-.logout-btn:hover {
-    background: linear-gradient(135deg, #6f42c1, #ee5a24) !important;
-    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-}
-
-.login-btn {
-    background: linear-gradient(135deg, #6f42c1, #41a5f7);
-}
-
-.login-btn:hover {
-    background: linear-gradient(135deg, #6f42c1, #41a5f7) !important;
-    box-shadow: 0 5px 15px rgba(65, 165, 247, 0.4);
-}
-        
-.database-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.database-btn {
-    cursor: pointer;
-    white-space: nowrap;
-}
-        
-.dropdown-content {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    min-width: 200px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 1001;
-    margin-top: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 0;
-    font-size: 1em;
-}
-        
-.dropdown-content a {
-    display: block;
-    padding: 12px 20px;
-    color: #333;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-}
-
-.dropdown-content a:last-child {
-    border-bottom: none;
-}
-
-.dropdown-content a:hover {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-    padding-left: 25px;
-}
-
-.database-dropdown:hover .dropdown-content {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-        
-        .search-container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        
-        .search-form {
-            display: flex;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-            background: white;
-        }
-        
-        .search-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .search-button {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .search-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .main-content {
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .results-header {
-            text-align: center;
-            margin-bottom: 40px;
-            color: white;
-        }
-        
-        .results-header h3 {
-            font-size: 2em;
-            font-weight: 300;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-        
-        .product-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-        
-        .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6c757d;
-            font-size: 14px;
-        }
-        
-        .product-info {
-            padding: 25px;
-        }
-        
-        .product-name {
-            font-size: 1.3em;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-            text-decoration: none;
-            display: block;
-        }
-        
-        .product-name:hover {
-            color: #667eea;
-        }
-        
-        .product-price {
-            font-size: 1.4em;
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .product-description {
-            color: #666;
-            font-size: 0.95em;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-        
-        .add-to-cart-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .add-to-cart-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .no-results h3 {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-            font-weight: 300;
-        }
-        
-        .back-link {
-            display: block;
-            text-align: center;
-            margin: 40px auto;
-            padding: 15px 30px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            max-width: 200px;
-        }
-        
-        .back-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        @media (max-width: 768px) {
-            .nav-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .results-header h3 {
-                font-size: 1.5em;
-            }
-            
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-left">
-                <div class="brand">
-                    <a href="{% url 'home' %}" class="brand-logo">TechMart</a>
-                </div>
-                
-                <div class="nav-categories">
-                    {% for category in categories %}
-                        <div class="nav-category">
-                            <a href="{% url 'product_list_by_category' category.id %}" style="text-decoration: none; color: inherit;">
-                                {{ category.name }}
-                            </a>
-                            {% if category.subcategories.all %}
-                                <div class="dropdown">
-                                    {% for subcategory in category.subcategories.all %}
-                                        <a href="{% url 'product_list_by_category' subcategory.id %}" class="dropdown-item">
-                                            {{ subcategory.name }}
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <div class="nav-actions">
-                                {% if request.session.is_admin %}
-                    <div class="database-dropdown">
-                        <button class="nav-btn database-btn" style="background: #6f42c1;">🗄️ Database ▼</button>
-                        <div class="dropdown-content">
-                            <a href="{% url 'add_product' %}">➕ Add Product</a>
-                            <a href="{% url 'orders_database' %}">📋 Orders Placed</a>
-                        </div>
-                    </div>
-                {% endif %}
-                <a href="{% url 'cart_detail' %}" class="nav-btn" style="background: none; border: none; font-size: 1.5em; padding: 5px 10px;">🛒</a>
-                {% if request.session.is_admin or request.session.is_logged_in %}
-                    <a href="{% url 'order_history' %}" class="nav-btn" style="background: none; border: none; font-size: 1.5em; padding: 5px 10px;">👤</a>
-                    <a href="{% url 'logout' %}" class="nav-btn logout-btn">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="nav-btn login-btn">Login</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-    
-    <div class="search-container">
-        <form method="GET" action="{% url 'search_products' %}" class="search-form">
-            <input type="text" name="q" value="{{ query }}" placeholder="Search for products..." class="search-input" required>
-            <button type="submit" class="search-button">Search</button>
+    <!-- Search Bar -->
+    <div class="search-section">
+        <form method="GET" action="{% url 'search_products' %}" class="form" novalidate>
+            <button type="submit" aria-label="Search">
+                <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
+                    <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+            <input class="input" name="q" placeholder="Search for products..." type="text" value="{{ query }}">
+            <button class="reset" type="reset" aria-label="Clear">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </form>
     </div>
 
-    <div class="main-content">
-        {% if query %}
-            <div class="results-header">
-                <h3>
-                    {% if products %}
-                        Found {{ products|length }} result{{ products|length|pluralize }} for "{{ query }}"
+    {% if query %}
+        <div class="results-header">
+            <h3>
+                {% if products %}
+                    Found {{ products|length }} result{{ products|length|pluralize }} for "{{ query }}"
+                {% else %}
+                    No results found for "{{ query }}"
+                {% endif %}
+            </h3>
+        </div>
+    {% endif %}
+
+    {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <a href="{% url 'product_detail' product.id %}" class="product-link">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
                     {% else %}
-                        No results found for "{{ query }}"
+                        <div class="product-image-placeholder">📱</div>
                     {% endif %}
-                </h3>
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-price">OMR {{ product.price }}</div>
+                    <div class="product-description">{{ product.description|default:"No description available" }}</div>
+                </a>
+                
+                <form action="{% url 'add_to_cart' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                </form>
             </div>
-        {% endif %}
+            {% endfor %}
+        </div>
+    {% elif query %}
+        <div class="no-results">
+            <h3>No products found matching "{{ query }}"</h3>
+            <p>Try searching with different keywords or browse our categories.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
 
-        {% if products %}
-            <div class="products-grid">
-                {% for product in products %}
-                    <div class="product-card">
-                        {% if product.image_url %}
-                            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-image">
-                        {% else %}
-                            <div class="product-image">No Image Available</div>
-                        {% endif %}
-                        <div class="product-info">
-                            <a href="{% url 'product_detail' product.id %}" class="product-name">
-                                {{ product.name }}
-                            </a>
-                            <div class="product-price">OMR {{ product.price }}</div>
-                            <div class="product-description">
-                                {{ product.description|truncatewords:20 }}
-                            </div>
-                            <form method="POST" action="{% url 'add_to_cart' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ product.id }}">
-                                <button type="submit" class="add-to-cart-btn">Add to Cart</button>
-                            </form>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% elif query %}
-            <div class="no-results">
-                <h3>No products found matching "{{ query }}"</h3>
-                <p>Try searching with different keywords or browse our categories.</p>
-            </div>
-        {% endif %}
-    </div>
+{% block extra_css %}
+<style>
+    .main-content {
+        padding: 40px 20px;
+        width: 100%;
+        margin: 0;
+        background: #000000;
+        min-height: 100vh;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .page-title {
+        font-size: 2.5em;
+        font-weight: 300;
+        color: white;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
 
-    <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
-</body>
-</html> 
+    /* Search Section (identical to categories page) */
+    .search-section {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .search-section form.form,
+    .form {
+      --timing: .3s;
+      --width-of-input: 500px;
+      --height-of-input: 48px;
+      --border-radius: 30px;
+      --after-border-radius: 10px; 
+      position: relative;
+      width: 500px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 0.8em;
+      border-radius: var(--border-radius) !important; 
+      transition: border-radius .5s ease !important;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(139,0,46,0.4) 50%, rgba(112,0,28,0.3) 100%);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      margin: 0 auto;
+    }
+
+    .form:focus-within { border-radius: var(--after-border-radius) !important; }
+
+    .search-section form.form button,
+    .form button { 
+      border: none; 
+      background: none; 
+      color: #fff; 
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    .search-section form.form .input,
+    .form .input {
+      font-size: 1rem;
+      background-color: transparent;
+      width: 100%;
+      height: 100%;
+      padding: 0.7em 0.5em;
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .input::placeholder { 
+      color: rgba(255,255,255,0.7); 
+    }
+
+    .reset { 
+      border: none; 
+      background: none; 
+      opacity: 0; 
+      visibility: hidden; 
+      color: #fff; 
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form input:not(:placeholder-shown) ~ .reset { 
+      opacity: 1; 
+      visibility: visible; 
+    }
+
+    .form svg { 
+      width: 17px; 
+      height: 17px;
+      color: #fff; 
+    }
+
+    .results-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .results-header h3 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+        max-width: 1600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .product-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .product-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        background: #f5f5f5;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .product-name {
+        font-size: 1.3em;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .product-price {
+        color: rgb(0, 0, 0);
+        font-weight: bold;
+        font-size: 1.4em;
+        margin-bottom: 15px;
+    }
+    
+    .product-description {
+        color: #666;
+        font-size: 0.95em;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+    
+    .product-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: all 0.3s ease;
+    }
+    
+    .product-link:hover .product-name {
+        color: #667eea;
+    }
+    
+    .add-to-cart-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(65, 65, 65) 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .add-to-cart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .product-image-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        background: #f5f5f5;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3em;
+        color: #ccc;
+    }
+
+    .no-results {
+        text-align: center;
+        color: white;
+        padding: 60px 20px;
+    }
+
+    .no-results h3 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .no-results p {
+        font-size: 1.2rem;
+        opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2em;
+        }
+        
+        .products-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .product-card {
+            padding: 20px;
+        }
+        
+        .product-image {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .product-image-placeholder {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5em;
+        }
+        
+        .product-name {
+            font-size: 1em;
+        }
+        
+        .product-price {
+            font-size: 1.1em;
+        }
+        
+        .add-to-cart-btn {
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+    }
+</style>
+{% endblock %}

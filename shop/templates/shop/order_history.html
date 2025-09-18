@@ -32,7 +32,7 @@
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         margin: 0;
         min-height: 2.5rem;
-            display: flex;
+            display: inline;
             align-items: center;
         position: relative;
     }
@@ -40,12 +40,11 @@
     .typing-cursor {
         display: inline-block;
         width: 2px;
-        height: 2rem;
+        height: 1em;
         background-color: #fff;
         margin-left: 4px;
         animation: blink 1s infinite;
-            position: relative;
-        top: 2px;
+        vertical-align: baseline;
     }
 
     @keyframes blink {
@@ -85,7 +84,7 @@
             padding: 2rem;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
-        border: 1px solid rgba(139, 0, 46, 0.3);
+        border: 1px solid rgba(81, 34, 50, 0.3);
         }
 
         .no-orders {
@@ -109,19 +108,19 @@
         .shop-now-btn {
             display: inline-block;
             padding: 0.8rem 2rem;
-        background: linear-gradient(135deg, rgb(139, 0, 46) 0%, rgb(75, 6, 29) 100%);
+        background: linear-gradient(135deg, rgb(81, 34, 50) 0%, rgb(60, 25, 35) 100%);
             color: white;
             text-decoration: none;
             border-radius: 25px;
             font-weight: 500;
             transition: all 0.3s ease;
-        border: 1px solid rgba(139, 0, 46, 0.5);
+        border: 1px solid rgba(81, 34, 50, 0.5);
         }
 
         .shop-now-btn:hover {
             transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(139, 0, 46, 0.4);
-        background: linear-gradient(135deg, rgb(160, 0, 53) 0%, rgb(90, 7, 35) 100%);
+        box-shadow: 0 5px 15px rgba(81, 34, 50, 0.4);
+        background: linear-gradient(135deg, rgb(99, 42, 61) 0%, rgb(70, 30, 42) 100%);
         }
 
         .order-card {
@@ -130,16 +129,16 @@
             padding: 1.5rem;
             margin-bottom: 1.5rem;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        border-left: 15px solid rgb(139, 0, 46);
+        border-left: 15px solid rgb(81, 34, 50);
             transition: transform 0.3s ease;
-        border: 3px solid rgba(139, 0, 46, 0.3);
+        border: 3px solid rgba(81, 34, 50, 0.3);
         backdrop-filter: blur(10px);
         }
 
         .order-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(139, 0, 46, 0.4);
-            border-color: rgba(156, 12, 60, 0.6);
+            box-shadow: 0 15px 35px rgba(81, 34, 50, 0.45);
+            border-color: rgba(81, 34, 50, 0.6);
         }
 
         .order-header {
@@ -148,7 +147,7 @@
             align-items: center;
             margin-bottom: 1rem;
             padding-bottom: 1rem;
-        border-bottom: 2px solid rgba(139, 0, 46, 0.3);
+        border-bottom: 2px solid rgba(81, 34, 50, 0.3);
         }
 
         .order-id {
@@ -225,7 +224,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.5rem 0;
-        border-bottom: 1px solid rgba(139, 0, 46, 0.2);
+        border-bottom: 1px solid rgba(81, 34, 50, 0.2);
         }
 
         .item:last-child {
@@ -251,7 +250,7 @@
             text-align: right;
             margin-top: 1rem;
             padding-top: 1rem;
-        border-top: 2px solid rgba(139, 0, 46, 0.3);
+        border-top: 2px solid rgba(81, 34, 50, 0.3);
         }
 
         .total-amount {
@@ -282,7 +281,7 @@
         padding: 1.5rem; /* a bit smaller */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
-        border: 3px solid rgba(139, 0, 46, 0.3);
+        border: 3px solid rgba(81, 34, 50, 0.3);
         transition: transform 0.3s ease;
         display: grid;                   /* Align internal sections */
         grid-template-rows: auto 1fr auto;/* Header, content (flexes), footer */
@@ -290,8 +289,8 @@
 
     .info-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(139, 0, 46, 0.4);
-        border-color: rgba(156, 12, 60, 0.6);
+        box-shadow: 0 15px 35px rgba(81, 34, 50, 0.45);
+        border-color: rgba(81, 34, 50, 0.6);
     }
 
     .card-header {
@@ -300,7 +299,7 @@
         align-items: center;
         margin-bottom: 1rem; /* tighter */
         padding-bottom: 0.75rem;
-        border-bottom: 2px solid rgba(139, 0, 46, 0.3);
+        border-bottom: 2px solid rgba(81, 34, 50, 0.3);
     }
 
     .card-header h3 {
@@ -317,7 +316,7 @@
     .card-content {
         margin-bottom: 1rem; /* tighter */
         padding-bottom: 1rem;
-        border-bottom: 2px solid rgba(139, 0, 46, 0.3);
+        border-bottom: 2px solid rgba(81, 34, 50, 0.3);
     }
 
     .saved-info {
@@ -350,55 +349,55 @@
     .add-btn {
         display: inline-block;
         padding: 0.8rem 1.5rem;
-        background: linear-gradient(135deg, rgb(139, 0, 46) 0%, rgb(75, 6, 29) 100%);
+        background: linear-gradient(135deg, rgb(81, 34, 50) 0%, rgb(60, 25, 35) 100%);
         color: white;
         text-decoration: none;
         border-radius: 25px;
         font-weight: 500;
         transition: all 0.3s ease;
-        border: 1px solid rgba(139, 0, 46, 0.5);
+        border: 1px solid rgba(81, 34, 50, 0.5);
     }
 
     .add-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(139, 0, 46, 0.4);
-        background: linear-gradient(135deg, rgb(160, 0, 53) 0%, rgb(90, 7, 35) 100%);
+        box-shadow: 0 5px 15px rgba(81, 34, 50, 0.4);
+        background: linear-gradient(135deg, rgb(99, 42, 61) 0%, rgb(70, 30, 42) 100%);
     }
 
     .edit-link {
         display: inline-block;
         padding: 0.6rem 1.2rem;
-        background: linear-gradient(135deg, rgb(139, 0, 46) 0%, rgb(75, 6, 29) 100%);
+        background: linear-gradient(135deg, rgb(81, 34, 50) 0%, rgb(60, 25, 35) 100%);
         color: white;
         text-decoration: none;
         border-radius: 20px;
         font-weight: 500;
         transition: all 0.3s ease;
-        border: 1px solid rgba(139, 0, 46, 0.5);
+        border: 1px solid rgba(81, 34, 50, 0.5);
     }
 
     .edit-link:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(139, 0, 46, 0.4);
-        background: linear-gradient(135deg, rgb(160, 0, 53) 0%, rgb(90, 7, 35) 100%);
+        box-shadow: 0 5px 15px rgba(81, 34, 50, 0.4);
+        background: linear-gradient(135deg, rgb(99, 42, 61) 0%, rgb(70, 30, 42) 100%);
     }
 
     .add-more-link {
         display: inline-block;
         padding: 0.6rem 1.2rem;
-        background: linear-gradient(135deg, rgb(139, 0, 46) 0%, rgb(75, 6, 29) 100%);
+        background: linear-gradient(135deg, rgb(81, 34, 50) 0%, rgb(60, 25, 35) 100%);
         color: white;
         text-decoration: none;
         border-radius: 20px;
         font-weight: 500;
         transition: all 0.3s ease;
-        border: 1px solid rgba(139, 0, 46, 0.5);
+        border: 1px solid rgba(81, 34, 50, 0.5);
     }
 
     .add-more-link:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(139, 0, 46, 0.4);
-        background: linear-gradient(135deg, rgb(160, 0, 53) 0%, rgb(90, 7, 35) 100%);
+        box-shadow: 0 5px 15px rgba(81, 34, 50, 0.4);
+        background: linear-gradient(135deg, rgb(99, 42, 61) 0%, rgb(70, 30, 42) 100%);
     }
 
     /* Modal Styles */
@@ -424,7 +423,7 @@
         width: 90%;
         max-height: 90vh;
         overflow-y: auto;
-        border: 2px solid rgba(139, 0, 46, 0.5);
+        border: 2px solid rgba(81, 34, 50, 0.5);
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
     }
 
@@ -434,7 +433,7 @@
         align-items: center;
         margin-bottom: 2rem;
         padding-bottom: 1rem;
-        border-bottom: 2px solid rgba(139, 0, 46, 0.3);
+        border-bottom: 2px solid rgba(81, 34, 50, 0.3);
     }
 
     .modal-header h3 {
@@ -541,15 +540,15 @@
     }
 
     .save-btn {
-        background: linear-gradient(135deg, rgb(139, 0, 46) 0%, rgb(75, 6, 29) 100%);
+        background: linear-gradient(135deg, rgb(81, 34, 50) 0%, rgb(60, 25, 35) 100%);
         color: white;
-        border: 1px solid rgba(139, 0, 46, 0.5);
+        border: 1px solid rgba(81, 34, 50, 0.5);
     }
 
     .save-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(139, 0, 46, 0.4);
-        background: linear-gradient(135deg, rgb(160, 0, 53) 0%, rgb(90, 7, 35) 100%);
+        box-shadow: 0 5px 15px rgba(81, 34, 50, 0.4);
+        background: linear-gradient(135deg, rgb(99, 42, 61) 0%, rgb(70, 30, 42) 100%);
     }
 
     /* Card Actions */
@@ -594,7 +593,7 @@
 {% block content %}
 <div class="container">
     <div class="greeting-section">
-        <h2 class="greeting-text"></h2>
+        <h2 class="greeting-text"></h2><span class="typing-cursor"></span>
     </div>
 
     <div class="info-cards-section">
@@ -764,10 +763,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Continue typing with a slight delay
                 setTimeout(typeNextChar, 75); // 75ms typing speed
             } else {
-                // Typing complete, remove cursor
-                if (cursorElement) {
-                    cursorElement.style.display = 'none';
-                }
+                // Typing complete; keep cursor blinking
             }
         }
         

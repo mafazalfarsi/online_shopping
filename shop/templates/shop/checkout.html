@@ -1,187 +1,83 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Order Confirmation - TechMart</title>
-    <style>
+{% extends 'shop/base.html' %}
+
+{% block title %}Order Confirmation - TechMart{% endblock %}
+
+{% block extra_css %}
+<style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
             margin: 0;
             padding: 0;
             min-height: 100vh;
             overflow-x: hidden;
+            color: white;
         }
         
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            position: sticky;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: none;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: fixed;
             top: 0;
             z-index: 1000;
+            width: 100%;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+            border-bottom: none;
+            transition: all 0.3s ease;
         }
         
         .nav-container {
+            position: relative;
             max-width: 1400px;
             margin: 0 auto;
             display: flex;
+            justify-content: center;
             align-items: center;
             padding: 0 40px;
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .brand-logo {
-            font-size: 2.4em;
-            font-weight: 800;
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .brand-logo:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
-        }
-        
-        .nav-categories {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-        
-        .nav-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-left: auto;
-            justify-content: flex-end;
-        }
-        
-        .nav-categories {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        
-        .nav-btn {
-            padding: 12px 24px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        
-        .nav-btn:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-        }
-        
-                .logout-btn {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24);
+            color: inherit;
         }
 
-        .logout-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24) !important;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-        
-        .login-btn {
-            background: linear-gradient(135deg, #6f42c1, #41a5f7);
-        }
-        
-        .login-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #41a5f7) !important;
-            box-shadow: 0 5px 15px rgba(65, 165, 247, 0.4);
-        }
-        
-        .database-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        
-              .database-btn {
-        cursor: pointer;
-        white-space: nowrap;
-      }
-        
-        .dropdown-content {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 1001;
-            margin-top: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0;
-            font-size: 1em;
-        }
-        
-        .dropdown-content a {
-            display: block;
-            padding: 12px 20px;
-            color: #333;
+        .brand-logo:hover {
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            color: inherit;
         }
-        
-        .dropdown-content a:last-child {
-            border-bottom: none;
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        
-        .dropdown-content a:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            padding-left: 25px;
+
+        .logo-main {
+            font-size: 2em;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 2px;
+            line-height: 0.9;
         }
-        
-        .database-dropdown:hover .dropdown-content {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+
+        .logo-sub {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 1px;
+            margin-top: -5px;
         }
         
         .main-content {
-            padding: 40px 20px;
+            padding: 120px 20px 40px;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -190,20 +86,19 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
             max-width: 600px;
             margin: 40px auto;
             padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(81, 34, 50, 0.3);
             text-align: center;
         }
         
         .checkout-title {
             font-size: 2.2em;
-            font-weight: 300;
-            color: #333;
+            font-weight: 400;
+            color: black;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         
         .checkout-message {
@@ -335,13 +230,13 @@
         }
         
         .home-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, #512232 0%, #3a1a24 100%);
             color: white;
         }
         
         .home-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 10px 20px rgba(81, 34, 50, 0.3);
         }
         
         @media (max-width: 768px) {
@@ -358,37 +253,18 @@
                 flex-direction: column;
             }
         }
-    </style>
-</head>
-<body>
+</style>
+{% endblock %}
+
+{% block content %}
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-left">
-                <div class="brand">
-                    <a href="{% url 'home' %}" class="brand-logo">TechMart</a>
+            <a href="{% url 'home' %}" class="brand-logo">
+                <div class="logo-text">
+                    <span class="logo-main">TECH</span>
+                    <span class="logo-sub">MART</span>
                 </div>
-                
-                <div class="nav-categories">
-                    {% for category in categories %}
-                        <div class="nav-category">
-                            <a href="{% url 'product_list_by_category' category.id %}" style="text-decoration: none; color: inherit;">
-                                {{ category.name }}
-                            </a>
-                            {% if category.subcategories.all %}
-                                <div class="dropdown">
-                                    {% for subcategory in category.subcategories.all %}
-                                        <a href="{% url 'product_list_by_category' subcategory.id %}" class="dropdown-item">
-                                            {{ subcategory.name }}
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-
+            </a>
         </div>
     </nav>
     
@@ -460,5 +336,4 @@
             </div>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

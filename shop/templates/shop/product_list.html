@@ -8,7 +8,7 @@
         padding: 40px 20px;
         width: 100%;
         margin: 0;
-        background: linear-gradient(135deg,rgb(31, 1, 12) 0%,rgb(68, 9, 32) 50%, rgb(0, 0, 0) 100%);
+        background: #000000;
         min-height: 100vh;
     }
     
@@ -45,6 +45,92 @@
         font-size: 1.2em;
         color: rgba(255, 255, 255, 0.9);
         margin-bottom: 0;
+    }
+    
+    /* Search Section - match animated bar used elsewhere */
+    .search-section {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .search-section form.form,
+    .form {
+      --timing: .3s;
+      --width-of-input: 500px;
+      --height-of-input: 48px;
+      --border-radius: 30px;
+      --after-border-radius: 10px;
+      position: relative;
+      width: 500px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 0.8em;
+      border-radius: var(--border-radius) !important;
+      transition: border-radius .5s ease !important;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(139,0,46,0.4) 50%, rgba(112,0,28,0.3) 100%);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255,255,255,0.4);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      margin: 0 auto;
+    }
+
+    .form:focus-within { border-radius: var(--after-border-radius) !important; }
+    .form.is-focused { border-radius: var(--after-border-radius) !important; }
+
+    .search-section form.form button,
+    .form button { 
+      border: none; 
+      background: none; 
+      color: #fff; 
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    .search-section form.form .input,
+    .form .input {
+      font-size: 1rem;
+      background-color: transparent;
+      width: 100%;
+      height: 100%;
+      padding: 0.7em 0.5em;
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .input::placeholder { 
+      color: rgba(255,255,255,0.7); 
+    }
+
+    .reset { 
+      border: none; 
+      background: none; 
+      opacity: 0; 
+      visibility: hidden; 
+      color: #fff; 
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form input:not(:placeholder-shown) ~ .reset { 
+      opacity: 1; 
+      visibility: visible; 
+    }
+
+    .form svg { 
+      width: 17px; 
+      height: 17px;
+      color: #fff; 
     }
     
     .products-grid {
@@ -118,7 +204,7 @@
     .add-to-cart-btn {
         width: 100%;
         padding: 12px;
-        background: linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(65, 65, 65) 100%);
+        background: linear-gradient(135deg,rgb(82, 3, 29) 0%,rgb(65, 65, 65) 100%);
         color: white;
         border: none;
         border-radius: 10px;
@@ -138,12 +224,12 @@
     }
     
     .edit-btn {
-        background: #28a745;
+        background:rgb(0, 0, 0);
         margin-top: 10px;
     }
     
     .edit-btn:hover {
-        background: #218838;
+        background:rgb(36, 36, 36);
     }
     
     .product-image-placeholder {
@@ -211,6 +297,23 @@
 {% block content %}
 <div class="main-content">
     <a href="{% url 'category_list' %}" class="back-btn">← Back to Categories</a>
+    
+    <!-- Search Bar -->
+    <div class="search-section">
+        <form method="GET" action="{% url 'search_products' %}" class="form" novalidate onfocusin="this.classList.add('is-focused')" onfocusout="this.classList.remove('is-focused')">
+            <button type="submit" aria-label="Search">
+                <svg width="17" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="search">
+                    <path d="M7.667 12.667A5.333 5.333 0 107.667 2a5.333 5.333 0 000 10.667zM14.334 14l-2.9-2.9" stroke="currentColor" stroke-width="1.333" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+            <input class="input" name="q" placeholder="Search for products..." type="text">
+            <button class="reset" type="reset" aria-label="Clear">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </form>
+    </div>
     
     <div class="category-header">
         <h1 class="category-title">{{ category.name }}</h1>

@@ -7,17 +7,18 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #000000;
             min-height: 100vh;
+            color: #ffffff;
         }
 
         .brand-header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 20px;
+            background: radial-gradient(600px circle at 10% -20%, rgba(81,34,50,0.25), transparent 60%);
+            padding: 20px 24px;
             text-align: center;
-            color: white;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border-bottom: 1px solid rgba(81, 34, 50, 0.35);
+            position: relative;
         }
 
         .brand-header h2 {
@@ -34,17 +35,18 @@
         }
 
         .form-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 40px auto;
-            background: white;
+            background: rgba(20, 20, 20, 0.9);
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(81,34,50,0.25);
             overflow: hidden;
+            border: 1px solid rgba(81, 34, 50, 0.35);
         }
 
         .form-title {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, rgba(81,34,50,0.8) 0%, rgba(30, 10, 16, 0.9) 100%);
+            color: #ffffff;
             margin: 0;
             padding: 25px;
             text-align: center;
@@ -63,19 +65,19 @@
         }
 
         .form-section {
-            background: #f8f9fa;
+            background: rgba(255,255,255,0.03);
             padding: 20px;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid rgba(81,34,50,0.8);
         }
 
         .section-title {
             font-size: 1.3em;
             font-weight: 600;
-            color: #333;
+            color: #ffffff;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 2px solid rgba(255,255,255,0.08);
         }
 
         .form-group {
@@ -86,14 +88,16 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: rgba(255,255,255,0.9);
             font-size: 1em;
         }
 
         .form-control {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e1e5e9;
+            border: 1px solid rgba(81,34,50,0.45);
+            background: rgba(255,255,255,0.05);
+            color: #ffffff;
             border-radius: 8px;
             font-size: 14px;
             transition: all 0.3s ease;
@@ -103,19 +107,19 @@
 
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: rgba(81,34,50,0.8);
+            box-shadow: 0 0 0 3px rgba(81,34,50,0.2);
         }
 
         .help-text {
             font-size: 0.85em;
-            color: #666;
+            color: rgba(255,255,255,0.65);
             margin-top: 5px;
             font-style: italic;
         }
 
         .error-message {
-            color: #e74c3c;
+            color: #ff6b6b;
             font-size: 0.9em;
             margin-top: 5px;
         }
@@ -142,13 +146,13 @@
         }
 
         .btn:first-child {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, rgba(81,34,50,0.9) 0%, rgba(50, 20, 30, 0.95) 100%);
             color: white;
         }
 
         .btn:first-child:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(81, 34, 50, 0.35);
         }
 
         .btn-secondary {
@@ -162,22 +166,23 @@
         }
 
         .product-info {
-            background: #e3f2fd;
+            background: rgba(81,34,50,0.12);
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #2196f3;
+            border-left: 4px solid rgba(81,34,50,0.8);
             grid-column: 1 / -1;
+            color: #ffffff;
         }
 
         .product-info h3 {
             margin: 0 0 10px 0;
-            color: #1976d2;
+            color: #ffffff;
         }
 
         .product-info p {
             margin: 5px 0;
-            color: #424242;
+            color: rgba(255,255,255,0.9);
         }
 
         .full-width {
@@ -185,35 +190,34 @@
         }
 
         .nav-btn {
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
+            padding: 10px 0;
+            background: transparent;
+            color: #ffffff;
             text-decoration: none;
-            border-radius: 25px;
+            border-radius: 0;
             font-weight: 500;
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
             font-size: 14px;
-            min-height: 44px;
-            display: flex;
+            min-height: 0;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
         }
         
         .nav-btn:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            color: rgba(255,255,255,0.85);
+            text-decoration: underline;
         }
         
         .logout-btn {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24);
+            background: linear-gradient(135deg, rgba(81,34,50,0.9), rgba(50, 20, 30, 0.95));
         }
         
         .logout-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24) !important;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(135deg, rgba(81,34,50,0.9), rgba(50, 20, 30, 0.95)) !important;
+            box-shadow: 0 5px 15px rgba(81, 34, 50, 0.35);
         }
 
         @media (max-width: 768px) {
@@ -239,6 +243,9 @@
 </head>
 <body>
     <div class="brand-header">
+        <div style="position:absolute;left:24px;top:22px;">
+            <a href="javascript:history.back()" class="nav-btn">← Back</a>
+        </div>
         <h2>TechMart</h2>
         <p class="brand-desc">Edit product details</p>
     </div>
@@ -380,10 +387,11 @@
             </div>
 
             <div class="button-group">
-                <button type="submit" class="btn">💾 Save Changes</button>
-                <a href="{% url 'product_detail' product.id %}" class="btn btn-secondary">❌ Cancel</a>
+                <button type="submit" class="btn"> Save Changes</button>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-secondary"> Cancel</a>
             </div>
         </form>
+
     </div>
 </body>
 </html> 

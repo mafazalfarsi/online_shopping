@@ -4,10 +4,16 @@
 
 {% block extra_css %}
     <style>
+        body {
+            background: #000000 !important;
+        }
+        
         .main-content {
             padding: 40px 20px;
             max-width: 1400px;
             margin: 0 auto;
+            background: #000000;
+            min-height: 100vh;
         }
         
         .database-container {
@@ -54,7 +60,7 @@
         .order-id {
             font-size: 1.3em;
             font-weight: bold;
-            color: #667eea;
+            color: #512232;
         }
         
         .order-details {
@@ -72,7 +78,7 @@
         
         .section-title {
             font-weight: bold;
-            color: #667eea;
+            color: #512232;
             margin-bottom: 10px;
             font-size: 1.1em;
         }
@@ -83,7 +89,7 @@
         }
         
         .info-item strong {
-            color: #667eea;
+            color: #512232;
         }
         
         .order-items {
@@ -118,7 +124,7 @@
         
         .item-price {
             font-weight: bold;
-            color: #667eea;
+            color:rgb(0, 0, 0);
         }
         
         .order-total {
@@ -165,7 +171,7 @@
         }
         
         .status-select:focus {
-            border-color: #667eea;
+            border-color: #512232;
         }
         
         .status-badge {
@@ -192,7 +198,7 @@
         
         .back-btn {
             display: inline-block;
-            color: white;
+            color: #512232;
             text-decoration: none;
             font-weight: 500;
             margin-top: 20px;
@@ -235,25 +241,101 @@
     </style>
 {% endblock %}
 
+{% block extra_js %}
 <script>
     function updateOrderStatus(orderId, selectElement) {
         const newStatus = selectElement.value;
         const form = selectElement.closest('form');
         const statusBadge = form.closest('.order-card').querySelector('.status-badge');
         
+        console.log('Updating order status:', orderId, 'to:', newStatus);
+        
         // Update the status badge immediately for better UX
         statusBadge.textContent = newStatus;
         statusBadge.className = `status-badge status-${newStatus.toLowerCase()}`;
         
-        // Submit the form
-        form.submit();
+        // Submit the form via AJAX to prevent page reload
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Status updated successfully');
+            } else {
+                console.error('Failed to update status');
+                // Revert the visual change if the request failed
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error updating status:', error);
+            // Revert the visual change if there was an error
+            location.reload();
+        });
     }
+    
+    function searchOrder() {
+        const searchInput = document.getElementById('order-search');
+        const orderNumber = searchInput.value.trim();
+        
+        if (orderNumber) {
+            // Find the order card with matching order number
+            const orderCards = document.querySelectorAll('.order-card');
+            let found = false;
+            
+            orderCards.forEach(card => {
+                const orderIdElement = card.querySelector('.order-id');
+                if (orderIdElement && orderIdElement.textContent.includes(orderNumber)) {
+                    // Scroll to the found order
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Highlight the card temporarily
+                    card.style.border = '2px solid #512232';
+                    setTimeout(() => {
+                        card.style.border = '';
+                    }, 3000);
+                    found = true;
+                }
+            });
+            
+            if (!found) {
+                alert('Order number not found: ' + orderNumber);
+            }
+        }
+    }
+    
+    // Allow Enter key to trigger search
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('order-search');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchOrder();
+                }
+            });
+        }
+    });
 </script>
+{% endblock %}
 
 {% block content %}
     <div class="main-content">
         <div class="database-container">
             <div class="database-title">Orders Database</div>
+            
+            <!-- Search Bar -->
+            <div class="search-section" style="margin-bottom: 30px; text-align: center;">
+                <div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.1); padding: 10px 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2);">
+                    <input type="text" id="order-search" placeholder="Search by order number..." 
+                           style="background: transparent; border: none; color: black; outline: none; font-size: 16px; width: 300px; padding: 5px;">
+                    <button onclick="searchOrder()" style="background: #512232; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 14px;">
+                        Search
+                    </button>
+                </div>
+            </div>
             
             <div class="orders-grid">
                 {% for order in orders %}

@@ -6,7 +6,7 @@
 <style>
   /* Background to match product list */
   html, body {
-      background: linear-gradient(135deg, rgb(31, 1, 12) 0%, rgb(68, 9, 32) 50%, rgb(0, 0, 0) 100%) !important;
+      background: linear-gradient(135deg, rgb(0, 0, 0) 0%, rgb(0, 0, 0) 50%, rgb(0, 0, 0) 100%) !important;
   }
 
   .search-container {
@@ -37,7 +37,7 @@
         }
 
         .product-header {
-            background: linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(0, 0, 0) 100%);
+            background: linear-gradient(135deg,#512232 0%,#512232 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -133,31 +133,41 @@
             padding: 10px 15px;
             background: #f8f9fa;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #512232;
         }
 
         .spec-label { font-weight: 600; color: #333; }
         .spec-value { color: #666; }
 
         .shipping-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .shipping-item { display:flex; align-items:center; gap:15px; padding:20px; background:#f8f9fa; border-radius:10px; border:1px solid #e9ecef; }
-        .shipping-icon { font-size:2em; }
-        .shipping-item strong { color:#333; display:block; margin-bottom: 5px; }
-        .shipping-item p { color:#666; margin:0; font-size:0.9em; }
+        .shipping-item { display:flex; align-items:center; gap:15px; padding:20px; background:#512232; border-radius:10px; border:1px solid rgba(255,255,255,0.15); }
+        .shipping-item strong { color:#ffffff; display:block; margin-bottom: 5px; }
+        .shipping-item p { color:rgba(255,255,255,0.9); margin:0; font-size:0.95em; }
 
         .product-details { margin-bottom: 30px; }
-        .product-price { font-size: 2em; font-weight: bold; color: #667eea; margin-bottom: 15px; }
+        .product-price { font-size: 2em; font-weight: bold; color: #000; margin-bottom: 15px; }
         .product-description { font-size: 1.1em; line-height: 1.6; color: #555; margin-bottom: 20px; }
-        .product-category { background:#f8f9fa; padding:10px 15px; border-radius:8px; display:inline-block; color:#667eea; font-weight:600; }
+        .product-category { background:#f8f9fa; padding:10px 15px; border-radius:8px; display:inline-block; color:#000; font-weight:600; }
 
-        .button-group { display:flex; gap:15px; justify-content:center; margin-top:30px; flex-wrap:wrap; }
+        .button-group { display:flex; gap:12px; justify-content:flex-start; margin-top:30px; flex-direction: column; align-items: flex-start; }
         .btn { padding:12px 30px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; transition: all .3s ease; text-decoration:none; display:inline-block; text-align:center; }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,.3); }
-        .btn-secondary { background:#6c757d; color:#fff; }
-        .btn-secondary:hover { background:#5a6268; transform: translateY(-2px); }
-        .btn-success { background:#28a745; color:#fff; }
-        .btn-success:hover { background:#218838; transform: translateY(-2px); }
+        .btn-primary { background:#000; color:#fff; }
+        .btn-primary:hover { background:#5a5a5a; }
+        .btn-secondary { background:transparent; color:#fff; }
+        .btn-secondary:hover { color:#ddd; }
+        .btn-success { background:#512232; color:#fff; }
+        .btn-success:hover { background:#633047; transform: translateY(-2px); }
+
+        /* Back link (match list page) */
+        .back-btn {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 0 20px 0;
+            opacity: 0.9;
+        }
+        .back-btn:hover { opacity: 1; text-decoration: underline; }
 
         /* Cart hover feedback */
         .btn-cart.feedback { transform: scale(1.1); box-shadow: 0 0 0 3px rgba(172,59,84,.4); }
@@ -181,6 +191,9 @@
         </form>
     </div>
 
+    <div class="back-wrap" style="width:100%;padding:0 20px 10px 20px;text-align:left;">
+        <a href="javascript:history.back()" class="back-btn">← Back to Categories</a>
+    </div>
     <div class="product-container">
         <div class="product-header">
             <h1>{{ product.name }}</h1>
@@ -213,28 +226,24 @@
                 <form id="add-to-cart-form" action="{% url 'add_to_cart' %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.id }}">
-                    <button type="submit" class="btn btn-success">🛒 Add to Cart</button>
+                    <button type="submit" class="btn btn-success">Add to Cart</button>
                 </form>
-                
-                        {% if request.session.is_admin %}
-                <a href="{% url 'edit_product' product.id %}" class="btn btn-primary">✏️ Edit Product</a>
+                {% if request.session.is_admin %}
+                <a href="{% url 'edit_product' product.id %}" class="btn btn-primary">Edit Product</a>
                 {% endif %}
-                
-                        {% if product.category %}
-                <a href="{% url 'product_list_by_category' product.category.id %}" class="btn btn-secondary">← Back to Category</a>
-                        {% endif %}
+
                     </div>
                 </div>
             </div>
 
             <div class="product-details-sections">
                 <div class="detail-section">
-                    <h3>📋 About This Product</h3>
+                    <h3>About This Product</h3>
                     <p>{{ product.about_product|default:product.description|default:"Experience premium quality and innovative design with this exceptional product. Crafted with attention to detail and built to last, this item combines style and functionality to meet your needs." }}</p>
                 </div>
 
                 <div class="detail-section">
-                    <h3>✨ Key Features</h3>
+                    <h3>Key Features</h3>
                     {% if product.key_features %}
                         <ul class="features-list">
                             {% for feature in product.key_features.splitlines %}
@@ -254,7 +263,7 @@
                 </div>
 
                 <div class="detail-section">
-                    <h3>📏 Specifications</h3>
+                    <h3>Specifications</h3>
                     <div class="specs-grid">
                         <div class="spec-item">
                             <span class="spec-label">Brand:</span>
@@ -284,27 +293,30 @@
                 </div>
 
                 <div class="detail-section">
-                    <h3>🚚 Shipping & Returns</h3>
+                    <h3>Shipping & Returns</h3>
                     <div class="shipping-info">
                         <div class="shipping-item">
-                            <span class="shipping-icon">🚚</span>
                             <div>
                                 <strong>Free Delivery</strong>
                                 <p>For orders over 70 OMR</p>
                             </div>
                         </div>
                         <div class="shipping-item">
-                            <span class="shipping-icon">🔄</span>
                             <div>
                                 <strong>60 Days Return</strong>
                                 <p>If goods have problems</p>
                             </div>
                         </div>
                         <div class="shipping-item">
-                            <span class="shipping-icon">🔒</span>
                             <div>
                                 <strong>Secure Payment</strong>
                                 <p>100% secure payment</p>
+                            </div>
+                        </div>
+                        <div class="shipping-item">
+                            <div>
+                                <strong>1 Year Warranty</strong>
+                                <p>Manufacturer warranty on eligible items</p>
                             </div>
                         </div>
                     </div>

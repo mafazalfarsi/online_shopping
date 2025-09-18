@@ -1,175 +1,83 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Checkout - TechMart</title>
-    <style>
+{% extends 'shop/base.html' %}
+
+{% block title %}Checkout - TechMart{% endblock %}
+
+{% block extra_css %}
+<style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
             margin: 0;
             padding: 0;
             min-height: 100vh;
             overflow-x: hidden;
+            color: white;
         }
         
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            position: sticky;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: none;
+            padding: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: fixed;
             top: 0;
             z-index: 1000;
+            width: 100%;
+            left: 0;
+            right: 0;
+            box-sizing: border-box;
+            border-bottom: none;
+            transition: all 0.3s ease;
         }
         
-                        .nav-container {
+        .nav-container {
+            position: relative;
             max-width: 1400px;
             margin: 0 auto;
             display: flex;
+            justify-content: center;
             align-items: center;
             padding: 0 40px;
-        }
-        
-        .brand {
-            display: flex;
-            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .brand-logo {
-            font-size: 2.2em;
-            font-weight: bold;
-            color: #667eea;
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            letter-spacing: 1px;
+            color: inherit;
         }
-        
-        .nav-categories {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        
-                .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
-        }
-        
-        .nav-actions {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-left: auto;
-            justify-content: flex-end;
-        }
-        
 
-        
-                                                .nav-categories {
+        .brand-logo:hover {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-text {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
             align-items: center;
         }
-        
-                .nav-btn {
-            padding: 12px 24px;
-            background: #007bff;
+
+        .logo-main {
+            font-size: 2em;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 2px;
+            line-height: 0.9;
+        }
+
+        .logo-sub {
+            font-size: 1.4em;
+            font-weight: 600;
             color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        
-        .nav-btn:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
-        }
-        
-                .logout-btn {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24);
-        }
-
-        .logout-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #ee5a24) !important;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-        
-        .login-btn {
-            background: linear-gradient(135deg, #6f42c1, #41a5f7);
-        }
-        
-        .login-btn:hover {
-            background: linear-gradient(135deg, #6f42c1, #41a5f7) !important;
-            box-shadow: 0 5px 15px rgba(65, 165, 247, 0.4);
-        }
-        
-        .database-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        
-              .database-btn {
-        cursor: pointer;
-        white-space: nowrap;
-      }
-        
-        .dropdown-content {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 1001;
-            margin-top: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 0;
-            font-size: 1em;
-        }
-        
-        .dropdown-content a {
-            display: block;
-            padding: 12px 20px;
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-        }
-        
-        .dropdown-content a:last-child {
-            border-bottom: none;
-        }
-        
-        .dropdown-content a:hover {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            padding-left: 25px;
-        }
-        
-        .database-dropdown:hover .dropdown-content {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+            letter-spacing: 1px;
+            margin-top: -5px;
         }
         
         .main-content {
-            padding: 40px 20px;
+            padding: 120px 20px 40px;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -178,27 +86,28 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
             max-width: 600px;
             margin: 40px auto;
             padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(81, 34, 50, 0.3);
+            position: relative;
+            transition: all 0.3s ease;
         }
         
         .checkout-title {
             font-size: 2.2em;
-            font-weight: 300;
-            color: #333;
+            font-weight: 400;
+            color: black;
             margin-bottom: 30px;
             text-align: center;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         
         .checkout-form label {
             display: block;
             margin-top: 20px;
-            color: #444;
-            font-weight: 500;
+            color: black;
+            font-weight: 600;
             font-size: 1.1em;
         }
         
@@ -211,12 +120,13 @@
             font-size: 1em;
             box-sizing: border-box;
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
+            background: white;
+            color: #333;
         }
         
         .checkout-form input:focus, .checkout-form textarea:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #512232;
+            box-shadow: 0 0 0 3px rgba(81, 34, 50, 0.1);
             outline: none;
         }
         
@@ -248,13 +158,13 @@
         }
         
         .confirm-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, #512232 0%, #3a1a24 100%);
             color: white;
         }
         
         .confirm-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 10px 20px rgba(81, 34, 50, 0.3);
         }
         
         .back-to-cart-btn {
@@ -269,48 +179,59 @@
         
         .saved-addresses-section {
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            background: rgba(81, 34, 50, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(81, 34, 50, 0.3);
         }
 
         .saved-addresses-section h3 {
             font-size: 1.5em;
-            color: #555;
+            color: #512232;
             margin-bottom: 15px;
-            text-align: center;
+            text-align: left;
         }
 
         .address-options {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            padding: 10px 0;
+            border: none;
+            border-radius: 0;
+            background: transparent;
         }
 
         .address-option {
             display: flex;
             align-items: center;
             padding: 10px 15px;
-            border: 1px solid #eee;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
-            background-color: #f9f9f9;
+            background-color: rgba(255, 255, 255, 0.05);
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
 
         .address-option:hover {
-            background-color: #f0f0f0;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
-        .address-option input[type="radio"] {
+        .address-option input[type="checkbox"] {
             margin-right: 10px;
             transform: scale(1.2);
-            accent-color: #667eea;
+            accent-color: #512232;
+        }
+
+        .address-option label {
+            color: black;
+            margin: 0;
         }
 
         .use-saved-btn {
             width: 100%;
             padding: 12px 20px;
-            background: #007bff;
+            background: linear-gradient(135deg, #512232 0%, #3a1a24 100%);
             color: white;
             border-radius: 25px;
             font-weight: 500;
@@ -325,15 +246,14 @@
         }
 
         .use-saved-btn:hover {
-            background: #0056b3;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            box-shadow: 0 10px 20px rgba(81, 34, 50, 0.3);
         }
 
         .divider {
             margin: 20px 0;
             border: none;
-            border-top: 1px solid #eee;
+            border-top: 2px solid rgba(81, 34, 50, 0.25);
         }
         
         @media (max-width: 768px) {
@@ -350,37 +270,18 @@
                 flex-direction: column;
             }
         }
-    </style>
-</head>
-<body>
+</style>
+{% endblock %}
+
+{% block content %}
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-left">
-                <div class="brand">
-                    <a href="{% url 'home' %}" class="brand-logo">TechMart</a>
+            <a href="{% url 'home' %}" class="brand-logo">
+                <div class="logo-text">
+                    <span class="logo-main">TECH</span>
+                    <span class="logo-sub">MART</span>
                 </div>
-                
-                <div class="nav-categories">
-                    {% for category in categories %}
-                        <div class="nav-category">
-                            <a href="{% url 'product_list_by_category' category.id %}" style="text-decoration: none; color: inherit;">
-                                {{ category.name }}
-                            </a>
-                            {% if category.subcategories.all %}
-                                <div class="dropdown">
-                                    {% for subcategory in category.subcategories.all %}
-                                        <a href="{% url 'product_list_by_category' subcategory.id %}" class="dropdown-item">
-                                            {{ subcategory.name }}
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-            
-
+            </a>
         </div>
     </nav>
     
@@ -395,7 +296,7 @@
                 <div class="address-options">
                     {% for address in saved_addresses %}
                     <div class="address-option">
-                        <input type="radio" name="saved_address" id="address_{{ address.id }}" value="{{ address.id }}">
+                        <input type="checkbox" name="saved_address" id="address_{{ address.id }}" value="{{ address.id }}">
                         <label for="address_{{ address.id }}">
                             <strong>{{ address.name }}</strong><br>
                             {{ address.address }}, {{ address.city }} {{ address.postal_code }}<br>
@@ -404,7 +305,6 @@
                     </div>
                     {% endfor %}
                 </div>
-                <button type="button" class="use-saved-btn" onclick="useSavedAddress()">Use Selected Address</button>
                 <hr class="divider">
             </div>
             {% endif %}
@@ -435,15 +335,7 @@
     </div>
     
     <script>
-        function useSavedAddress() {
-            const selectedAddress = document.querySelector('input[name="saved_address"]:checked');
-            if (!selectedAddress) {
-                alert('Please select an address first.');
-                return;
-            }
-            
-            const addressId = selectedAddress.value;
-            
+        function loadSavedAddress(addressId) {
             // Fetch the selected address details
             fetch(`/get-address-details/${addressId}/`)
                 .then(response => response.json())
@@ -475,17 +367,35 @@
                             document.getElementById('checkout-form').appendChild(hiddenField);
                         }
                         hiddenField.value = addressId;
-                        
-                        // Show success message
-                        alert('Address loaded successfully! You can now proceed to payment.');
                     } else {
-                        alert('Error loading address details.');
+                        console.error('Error loading address details.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error loading address details.');
                 });
+        }
+        
+        function clearForm() {
+            // Clear all form fields
+            document.getElementById('name').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('city').value = '';
+            document.getElementById('postal_code').value = '';
+            document.getElementById('phone').value = '';
+            
+            // Re-enable all fields
+            document.getElementById('name').disabled = false;
+            document.getElementById('address').disabled = false;
+            document.getElementById('city').disabled = false;
+            document.getElementById('postal_code').disabled = false;
+            document.getElementById('phone').disabled = false;
+            
+            // Remove the hidden field
+            const hiddenField = document.getElementById('saved_address_id');
+            if (hiddenField) {
+                hiddenField.remove();
+            }
         }
         
         // Allow users to manually edit fields if they want to change saved address
@@ -493,11 +403,29 @@
             const form = document.getElementById('checkout-form');
             const inputs = form.querySelectorAll('input, textarea');
             
+            // Add event listeners to checkboxes for automatic address loading
+            const savedAddressCheckboxes = document.querySelectorAll('input[name="saved_address"]');
+            savedAddressCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    // Uncheck all other checkboxes when one is selected
+                    if (this.checked) {
+                        savedAddressCheckboxes.forEach(cb => {
+                            if (cb !== this) {
+                                cb.checked = false;
+                            }
+                        });
+                        loadSavedAddress(this.value);
+                    } else {
+                        // Clear the form when checkbox is unselected
+                        clearForm();
+                    }
+                });
+            });
+            
             inputs.forEach(input => {
                 input.addEventListener('input', function() {
                     // If user starts typing, remove the saved address selection
-                    const savedAddressRadios = document.querySelectorAll('input[name="saved_address"]');
-                    savedAddressRadios.forEach(radio => radio.checked = false);
+                    savedAddressCheckboxes.forEach(checkbox => checkbox.checked = false);
                     
                     // Remove the hidden field
                     const hiddenField = document.getElementById('saved_address_id');
@@ -511,5 +439,4 @@
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}

@@ -441,8 +441,9 @@ def order_confirmation(request):
         # Create order
         order = Order.objects.create(
             order_id=order_id,
-            customer_name=order_info['name'],
-            customer_phone=order_info['phone'],
+            customer_name=request.session.get('customer_name', order_info['name']),
+            customer_email=request.session.get('customer_email', order_info.get('email','')),
+            customer_phone=request.session.get('customer_phone', order_info['phone']),
             address=order_info['address'],
             city=order_info['city'],
             postal_code=order_info['postal_code'],
@@ -606,6 +607,10 @@ def edit_product(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
         if request.method == 'POST':
+            # Handle delete action
+            if request.POST.get('action') == 'delete':
+                product.delete()
+                return redirect('all_products')
             form = EditProductForm(request.POST, instance=product)
             if form.is_valid():
                 form.save()
@@ -674,6 +679,12 @@ def login_view(request):
                 user = User.objects.get(username=username, password=password)
                 request.session['is_logged_in'] = True
                 request.session['username'] = username
+                # Ensure checkout/order association picks up user identity
+                request.session['customer_name'] = username
+                if getattr(user, 'email', None):
+                    request.session['customer_email'] = user.email
+                if getattr(user, 'phone', None):
+                    request.session['customer_phone'] = user.phone
                 
                 # Check if there's a next_url to redirect to
                 next_url = request.session.get('next_url')
@@ -723,6 +734,10 @@ def signup_view(request):
         # Log the user in automatically
         request.session['is_logged_in'] = True
         request.session['username'] = username
+        # Persist identity for order association
+        request.session['customer_name'] = username
+        if getattr(user, 'email', None):
+            request.session['customer_email'] = user.email
         
         # Check if there's a next_url to redirect to
         next_url = request.session.get('next_url')
@@ -764,13 +779,31 @@ def order_history(request):
     
     # Get the username from session
     username = request.session.get('username')
-    
-    # Get orders for this user (by customer name or email)
-    # Since we don't have a direct user relationship in Order model,
-    # we'll match by customer name or email that matches the username
-    orders = Order.objects.filter(
-        customer_name__icontains=username
-    ).order_by('-order_date')
+    customer_email = request.session.get('customer_email')
+    customer_phone = request.session.get('customer_phone')
+    thawani_order_id = request.session.get('thawani_order_id') or request.session.get('last_order_id')
+
+    # Build a flexible filter since we don't have a FK to User
+    from django.db.models import Q
+    query = Q()
+    if username:
+        query |= Q(customer_name__icontains=username)
+        # some sites use email as username
+        query |= Q(customer_email__icontains=username)
+    if customer_email:
+        query |= Q(customer_email__iexact=customer_email)
+    if customer_phone:
+        query |= Q(customer_phone__iexact=customer_phone)
+
+    orders = Order.objects.filter(query).order_by('-order_date') if query else Order.objects.none()
+
+    # Always include the most recent order created in this session (e.g., via Thawani)
+    if thawani_order_id:
+        try:
+            recent = Order.objects.filter(order_id=thawani_order_id)
+            orders = (orders | recent).distinct().order_by('-order_date')
+        except Order.DoesNotExist:
+            pass
     
     # Get all top-level categories for navigation
     categories = Category.objects.filter(parent__isnull=True)
@@ -796,24 +829,35 @@ def order_history(request):
 def update_order_status(request, order_id):
     # Check if user is admin
     if not request.session.get('is_admin'):
+        print(f"DEBUG: User not admin, redirecting to home")
         return redirect('home')
+    
+    print(f"DEBUG: update_order_status called for order_id={order_id}, method={request.method}")
     
     if request.method == 'POST':
         order = get_object_or_404(Order, id=order_id)
         new_status = request.POST.get('status')
         
+        print(f"DEBUG: Order found: {order.order_id}, new_status: {new_status}")
+        
         # Validate status
         valid_statuses = ['Pending', 'Shipped', 'Delivered']
         if new_status in valid_statuses:
+            print(f"DEBUG: Status valid, updating order status from {order.status} to {new_status}")
             order.status = new_status
             order.save()
+            print(f"DEBUG: Order saved successfully")
             
             # Return JSON response for AJAX requests
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
                 return JsonResponse({'success': True, 'status': new_status})
             
             # Redirect back to orders database
             return redirect('orders_database')
+        else:
+            print(f"DEBUG: Invalid status: {new_status}")
+    else:
+        print(f"DEBUG: Not a POST request, method: {request.method}")
     
     return redirect('orders_database')
 
@@ -1294,21 +1338,10 @@ def thawani_success(request):
     """
     Handle successful payment from Thawani
     """
-    session_id = request.GET.get('session_id')
-    print(f"=== Thawani Success Called ===")
-    print(f"Session ID: {session_id}")
-    print(f"All GET parameters: {request.GET}")
-    print(f"All POST parameters: {request.POST}")
-    print(f"Request headers: {dict(request.headers)}")
-    print(f"Session data: {dict(request.session)}")
-    print(f"Request URL: {request.build_absolute_uri()}")
-    print(f"Request method: {request.method}")
-    print(f"Request path: {request.path}")
-    print(f"Request META: {dict(request.META)}")
-    
-    # Remove the immediate redirect for testing
-    # print("Redirecting to thawani_order_confirmation immediately for testing")
-    # return redirect('thawani_order_confirmation')
+    # Immediately send the customer to the confirmation page.
+    # The confirmation view already knows how to read session data,
+    # finalize the order if needed, and show the success screen.
+    return redirect('thawani_order_confirmation')
     
     # Try to get session_id from various sources
     session_id = request.GET.get('session_id') or request.POST.get('session_id')
@@ -1488,6 +1521,9 @@ def thawani_success(request):
                         
                             # Store order ID in session for confirmation page
                             request.session['thawani_order_id'] = order_id
+                            request.session['last_order_id'] = order_id
+                            request.session['thawani_order_id'] = order_id
+                            request.session['last_order_id'] = order_id
                             request.session['thawani_order_created'] = True
                         
                             # Create order items

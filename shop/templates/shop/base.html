@@ -127,7 +127,7 @@
         .logo-main {
             font-size: 2em;
             font-weight: 800;
-            color: rgb(105, 17, 39);
+            color: #ffffff;
             letter-spacing: 2px;
             line-height: 0.9;
         }
@@ -409,7 +409,7 @@
         /* Logout link style (burgundy text only) */
         .menu-dropdown .dropdown-content a.logout-link {
             background: transparent;
-            color: rgb(139, 0, 46);
+            color: rgb(117, 49, 72);
             font-weight: 700;
             border-bottom: none;
             margin: 0;
@@ -418,7 +418,7 @@
         .menu-dropdown .dropdown-content a.logout-link:hover {
             background: rgba(255, 255, 255, 0.1);
             padding-left: 25px; /* same slide effect */
-            color: rgb(160, 0, 53);
+            color: rgb(148, 60, 89);
         }
 
         /* Admin Database Dropdown */
@@ -450,14 +450,24 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
+        .database-btn {
+            background: #512232 !important;
+        }
+
+        .database-btn:hover {
+            background: #3a1a24 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(81, 34, 50, 0.3);
+        }
+
         .database-dropdown .dropdown-content {
             position: absolute;
             top: 100%;
             left: 0;
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             min-width: 200px;
             opacity: 0;
             visibility: hidden;
@@ -465,9 +475,10 @@
             transition: all 0.3s ease;
             z-index: 1001;
             margin-top: 10px;
-            border: 1px solid #f0f0f0;
+            border: 1px solid rgba(81, 34, 50, 0.3);
             padding: 0;
             font-size: 1em;
+            overflow: hidden; /* keep rounded corners when hovering items */
         }
 
         .database-dropdown:hover .dropdown-content {
@@ -479,11 +490,11 @@
         .database-dropdown .dropdown-content a {
             display: block;
             padding: 12px 20px;
-            color: #666;
+            color: #ffffff;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.2s ease;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid rgba(81, 34, 50, 0.2);
             font-size: 14px;
         }
 
@@ -492,9 +503,10 @@
         }
 
         .database-dropdown .dropdown-content a:hover {
-            background: #f8f9fa;
-            color: #1a1a1a;
-            padding-left: 25px;
+            background: rgba(81, 34, 50, 0.3);
+            color: #ffffff;
+            transform: translateX(5px);
+            border-radius: 0; /* Ensure no border-radius on individual items */
         }
 
         @media (max-width: 768px) {
@@ -580,6 +592,37 @@
             }
         }
 
+        /* Footer */
+        .site-footer { background: #0a0a0a; color: #eaeaea; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 0; }
+        .footer-container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .footer-top { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .feature { display: block; }
+        .feature-icon { display: none; }
+        .feature-title { font-weight: 700; }
+        .feature-sub { opacity: .8; font-size: 14px; }
+
+        .footer-mid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; padding-top: 24px; padding-bottom: 24px; }
+        .info-title { font-weight: 700; margin-bottom: 10px; letter-spacing: .5px; }
+        .info-line { margin: 6px 0; opacity: .9; }
+        .info a { color: #eaeaea; text-decoration: none; }
+        .info a:hover { text-decoration: underline; }
+
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; text-align: center; font-size: 14px; opacity: .8; }
+
+        @media (max-width: 900px) {
+            .footer-top, .footer-mid { grid-template-columns: 1fr; }
+        }
+
+        /* Global search bar focus animation fallback */
+        .search-section .form {
+            transition: border-radius .5s ease !important;
+            border-radius: var(--border-radius, 30px) !important;
+        }
+        .search-section .form.is-focused,
+        .search-section .form:focus-within {
+            border-radius: var(--after-border-radius, 10px) !important;
+        }
+
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -602,7 +645,7 @@
                         <div class="nav-right">
                 {% if request.session.is_admin %}
                     <div class="database-dropdown">
-                        <button class="nav-btn database-btn" style="background: #6f42c1;">Database</button>
+                        <button class="nav-btn database-btn">Database</button>
                         <div class="dropdown-content">
                             <a href="{% url 'add_product' %}">Add Product</a>
                             <a href="{% url 'orders_database' %}">Orders Placed</a>
@@ -636,7 +679,7 @@
                     <div class="dropdown-content">
                         
                         <a href="{% url 'category_list' %}">Shop by Category</a>
-                        <a href="#about">About</a>
+                        <a href="{% url 'contact' %}">Contact</a>
 
                         {% if request.session.is_admin or request.session.is_logged_in %}
                         <a href="{% url 'logout' %}" class="logout-link">Logout</a>
@@ -649,6 +692,79 @@
     </nav>
 
     {% block content %}{% endblock %}
+
+    <script>
+    // Ensure search bars animate border radius on focus across all pages
+    document.addEventListener('DOMContentLoaded', function() {
+      const forms = document.querySelectorAll('.search-section form.form');
+      forms.forEach(f => {
+        // Ensure transition is present and strong enough
+        f.style.setProperty('transition','border-radius .5s ease','important');
+        // Fallback class for CSS-based change
+        f.addEventListener('focusin', () => {
+          f.classList.add('is-focused');
+          // Force the radius in case any !important rule overrides
+          f.style.setProperty('border-radius','10px','important');
+        });
+        f.addEventListener('focusout', () => {
+          f.classList.remove('is-focused');
+          f.style.setProperty('border-radius','30px','important');
+        });
+      });
+    });
+    </script>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="feature">
+                    <div class="feature-icon"></div>
+                    <div class="feature-text">
+                        <div class="feature-title">Fast Delivery</div>
+                        <div class="feature-sub">Same-day dispatch on orders before 3 PM</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon"></div>
+                    <div class="feature-text">
+                        <div class="feature-title">100% Authentic</div>
+                        <div class="feature-sub">Genuine products, sealed & verified</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon"></div>
+                    <div class="feature-text">
+                        <div class="feature-title">1 Year Warranty</div>
+                        <div class="feature-sub">Manufacturer warranty on eligible items</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-mid">
+                <div class="info">
+                    <div class="info-title">Contact</div>
+                    <div class="info-line">Phone: +968 90 000 000</div>
+                    <div class="info-line">WhatsApp: <a href="https://wa.me/96890000000" target="_blank" rel="noopener">+968 90 000 000</a></div>
+                    <div class="info-line">Email: <a href="mailto:support@techmart.om">support@techmart.om</a></div>
+                </div>
+                <div class="info">
+                    <div class="info-title">Working Hours</div>
+                    <div class="info-line">Sun – Thu: 9:00 AM – 9:00 PM</div>
+                    <div class="info-line">Fri: 4:00 PM – 9:00 PM</div>
+                    <div class="info-line">Sat: 10:00 AM – 6:00 PM</div>
+                </div>
+                <div class="info">
+                    <div class="info-title">Store</div>
+                    <div class="info-line">Muscat, Oman</div>
+                    <div class="info-line">Pickup & delivery available</div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="copy">© {{ now|date:'Y' }} TechMart. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
 
     {% block extra_js %}{% endblock %}
 

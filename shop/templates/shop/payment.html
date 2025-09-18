@@ -1,3 +1,296 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Payment - TechMart{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #000000;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: white;
+    }
+
+    .navbar {
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: none;
+        padding: 20px 0;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        position: fixed;
+        top: 0;
+        z-index: 1000;
+        width: 100%;
+        left: 0;
+        right: 0;
+        box-sizing: border-box;
+        border-bottom: none;
+        transition: all 0.3s ease;
+    }
+
+    .nav-container {
+        position: relative;
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 40px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .brand-logo { display:flex; align-items:center; text-decoration:none; color:inherit; }
+    .brand-logo:hover { text-decoration:none; color:inherit; }
+    .logo-text { display:flex; flex-direction:column; align-items:center; }
+    .logo-main { font-size:2em; font-weight:800; color:#ffffff; letter-spacing:2px; line-height:.9; }
+    .logo-sub { font-size:1.4em; font-weight:600; color:#ffffff; letter-spacing:1px; margin-top:-5px; }
+
+    .main-content { padding: 120px 20px 40px; max-width: 1200px; margin: 0 auto; }
+
+    .payment-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 40px;
+        border: 2px solid rgba(81, 34, 50, 0.3);
+    }
+
+    .payment-title { font-size: 2.2em; font-weight: 400; color: black; margin-bottom: 30px; text-align: center; }
+
+    .order-summary { background: rgba(81,34,50,0.08); border-radius: 15px; padding: 25px; margin-bottom: 30px; }
+    .order-summary h3 { color:#512232; margin-bottom: 15px; font-size: 1.3em; }
+    .total-breakdown { display:flex; flex-direction:column; gap:8px; }
+    .subtotal, .delivery-fee, .final-total { display:flex; justify-content:space-between; align-items:center; padding:5px 0; }
+    .subtotal, .delivery-fee { color:#666; font-size:1em; }
+    .final-total { border-top:2px solid rgba(81,34,50,0.25); padding-top:10px; margin-top:10px; font-size:1.3em; font-weight:bold; color:#512232; }
+
+    .saved-payment-section { margin-bottom: 30px; }
+    .saved-payment-section h3 { color: black; margin-bottom: 15px; font-size: 1.3em; text-align: left; }
+    .saved-cards { display:flex; flex-direction:column; gap:10px; padding:20px; border:2px solid rgba(81,34,50,0.3); border-radius:15px; background: rgba(255,255,255,0.05); }
+    .saved-card-option { display:flex; align-items:center; gap:10px; padding:10px 15px; background: rgba(81,34,50,0.08); border-radius:10px; cursor:pointer; transition:.2s; }
+    .saved-card-option:hover { background: rgba(81,34,50,0.15); transform: translateX(5px); }
+    .saved-card-option input[type="checkbox"] { transform: scale(1.2); accent-color:#512232; }
+    .card-info { font-size: .9em; color: #333; }
+    .divider { border-top: 1px solid #dee2e6; margin: 20px 0; }
+
+    .payment-methods { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px; margin-bottom:30px; }
+    .payment-method { border:2px solid rgba(81,34,50,0.25); border-radius:15px; padding:20px; cursor:pointer; transition:.3s; background:white; }
+    .payment-method:hover { border-color:#512232; transform:translateY(-2px); box-shadow:0 5px 15px rgba(81,34,50,.15); }
+    .payment-method.selected { border-color:#512232; background: rgba(81,34,50,.05); }
+    .payment-method-header { display:flex; align-items:center; gap:10px; margin-bottom:15px; }
+    .payment-icon { font-size:1.5em; }
+    .payment-title { font-size:1.2em; font-weight:600; color:#333; margin:0; }
+    .payment-description { color:#666; font-size:.9em; line-height:1.4; }
+    .payment-form { display:none; margin-top:20px; }
+    .payment-form.active { display:block; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display:block; margin-bottom:5px; color:#444; font-weight:500; }
+    .form-group input { width:100%; padding:12px; border-radius:8px; border:2px solid #e1e5e9; font-size:1em; transition:.3s; box-sizing:border-box; }
+    .form-group input:focus { border-color:#512232; box-shadow:0 0 0 3px rgba(81,34,50,.1); outline:none; }
+    /* Remove caret/cursor and interactions for COD amount field */
+    #cod-amount { caret-color: transparent; pointer-events: none; }
+    .card-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+
+    .button-group { display:flex; gap:15px; justify-content:center; margin-top:30px; }
+    .place-order-btn, .return-btn { padding:15px 30px; border-radius:25px; text-decoration:none; font-weight:600; transition:.3s; border:none; cursor:pointer; font-size:16px; min-height:44px; display:flex; align-items:center; justify-content:center; }
+    .place-order-btn { background: linear-gradient(135deg, #512232 0%, #3a1a24 100%); color:white; }
+    .place-order-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(81,34,50,0.3); }
+    .return-btn { background:#6c757d; color:white; }
+    .return-btn:hover { background:#5a6268; transform: translateY(-2px); }
+
+    @media (max-width: 768px) {
+        .payment-container { margin:20px; padding:30px 20px; }
+        .payment-title { font-size:1.8em; }
+        .payment-methods { grid-template-columns:1fr; }
+        .card-row { grid-template-columns:1fr; }
+        .button-group { flex-direction:column; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="{% url 'home' %}" class="brand-logo">
+            <div class="logo-text">
+                <span class="logo-main">TECH</span>
+                <span class="logo-sub">MART</span>
+            </div>
+        </a>
+    </div>
+</nav>
+
+<div class="main-content">
+    <div class="payment-container">
+        {% csrf_token %}
+        <div class="payment-title">Choose Payment Method</div>
+
+        <div class="order-summary">
+            <h3>Order Summary</h3>
+            <div class="total-breakdown">
+                <div class="subtotal"><span>Subtotal:</span><span>OMR {{ cart.total_price }}</span></div>
+                <div class="delivery-fee"><span>Delivery Fee:</span><span>{% if cart.delivery_fee > 0 %}OMR {{ cart.delivery_fee }}{% else %}FREE{% endif %}</span></div>
+                <div class="final-total"><strong>Total: OMR {{ cart.final_total }}</strong></div>
+            </div>
+        </div>
+
+        {% if saved_cards %}
+        <div class="saved-payment-section">
+            <h3>Use Saved Payment Method</h3>
+            <div class="saved-cards">
+                {% for card in saved_cards %}
+                <div class="saved-card-option">
+                    <input type="checkbox" name="saved_payment" id="card_{{ card.id }}" value="{{ card.id }}">
+                    <label for="card_{{ card.id }}">
+                        <div class="card-info">
+                            <strong>•••• •••• •••• {{ card.last_four }}</strong><br>
+                            <span>Expires: {{ card.expiry_month }}/{{ card.expiry_year }}</span><br>
+                            <span>{{ card.cardholder_name }}</span>
+                        </div>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+            <hr class="divider">
+        </div>
+        {% endif %}
+
+        <div class="payment-methods">
+            <div class="payment-method" onclick="selectPayment('thawani')">
+                <div class="payment-method-header"><div class="payment-icon">🏦</div><h4 class="payment-title">Thawani Pay</h4></div>
+                <div class="payment-description">Secure payment gateway for Oman - Accepts card payments</div>
+                <div class="payment-form" id="thawani-form">
+                    <div class="form-group"><p style="color:#666; font-size:.9em; margin-top:10px;">You will be redirected to Thawani's secure payment page to complete your transaction.</p></div>
+                </div>
+            </div>
+            
+            <div class="payment-method" onclick="selectPayment('card')">
+                <div class="payment-method-header"><div class="payment-icon">💳</div><h4 class="payment-title">Credit/Debit Card</h4></div>
+                <div class="payment-description">Pay with your credit or debit card</div>
+                <div class="payment-form" id="card-form">
+                    <div class="form-group"><label for="card-number">Card Number</label><input type="text" id="card-number" placeholder="1234 5678 9012 3456" required></div>
+                    <div class="card-row">
+                        <div class="form-group"><label for="expiry">Expiry Date</label><input type="text" id="expiry" placeholder="MM/YY" required></div>
+                        <div class="form-group"><label for="cvv">CVV</label><input type="text" id="cvv" placeholder="123" required></div>
+                    </div>
+                    <div class="form-group"><label for="card-name">Cardholder Name</label><input type="text" id="card-name" placeholder="John Doe" required></div>
+                </div>
+            </div>
+            <div class="payment-method" onclick="selectPayment('cod')">
+                <div class="payment-method-header"><div class="payment-icon">💵</div><h4 class="payment-title">Cash on Delivery</h4></div>
+                <div class="payment-description">Pay with cash when your order arrives</div>
+                <div class="payment-form" id="cod-form">
+                    <div class="form-group"><label for="cod-amount">Amount to Pay</label><input type="text" id="cod-amount" value="OMR {{ cart.final_total }}" readonly></div>
+                    <p style="color:#666; font-size:.9em; margin-top:10px;">Please have the exact amount ready when your order arrives.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <a href="{% url 'checkout' %}" class="return-btn">← Return to Checkout</a>
+            <button type="button" class="place-order-btn" onclick="placeOrder()">Place Order</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedPayment = null;
+
+function selectPayment(method) {
+    document.querySelectorAll('.payment-method').forEach(pm => pm.classList.remove('selected'));
+    document.querySelectorAll('.payment-form').forEach(f => f.classList.remove('active'));
+    document.getElementById(`${method}-form`).classList.add('active');
+    document.querySelector(`[onclick="selectPayment('${method}')"]`).classList.add('selected');
+    selectedPayment = method;
+}
+
+// Saved card checkbox behavior
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('input[name="saved_payment"]');
+    const inputs = document.querySelectorAll('#card-number, #expiry, #card-name, #cvv');
+
+    function clearCardForm() {
+        document.getElementById('card-number').value = '';
+        document.getElementById('expiry').value = '';
+        document.getElementById('card-name').value = '';
+        document.getElementById('card-number').disabled = false;
+        document.getElementById('expiry').disabled = false;
+        document.getElementById('card-name').disabled = false;
+        const hidden = document.getElementById('saved_card_id');
+        if (hidden) hidden.remove();
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            if (this.checked) {
+                checkboxes.forEach(other => { if (other !== this) other.checked = false; });
+                const id = this.value;
+                const info = document.querySelector(`#card_${id} ~ label .card-info`);
+                const lastFour = info.querySelector('strong').textContent.split(' ').pop();
+                const expiry = info.querySelector('span').textContent.split('Expires: ')[1];
+                const name = info.querySelectorAll('span')[1].textContent;
+                selectPayment('card');
+                document.getElementById('card-number').value = `•••• •••• •••• ${lastFour}`;
+                document.getElementById('expiry').value = expiry;
+                document.getElementById('card-name').value = name;
+                document.getElementById('card-number').disabled = true;
+                document.getElementById('expiry').disabled = true;
+                document.getElementById('card-name').disabled = true;
+                let hidden = document.getElementById('saved_card_id');
+                if (!hidden) {
+                    hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'saved_card_id';
+                    hidden.id = 'saved_card_id';
+                    document.querySelector('.payment-container').appendChild(hidden);
+                }
+                hidden.value = id;
+            } else {
+                clearCardForm();
+            }
+        });
+    });
+
+    inputs.forEach(inp => {
+        inp.addEventListener('input', () => {
+            checkboxes.forEach(cb => cb.checked = false);
+            clearCardForm();
+        });
+    });
+});
+
+function placeOrder() {
+    if (!selectedPayment) {
+        alert('Please select a payment method');
+        return;
+    }
+    if (selectedPayment === 'thawani') {
+        proceedWithThawani();
+    } else {
+        window.location.href = "{% url 'order_confirmation' %}";
+    }
+}
+
+function proceedWithThawani() {
+    const placeOrderBtn = document.querySelector('.place-order-btn');
+    const originalText = placeOrderBtn.textContent;
+    placeOrderBtn.textContent = 'Processing...';
+    placeOrderBtn.disabled = true;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch("{% url 'thawani_create_session' %}", { method:'POST', headers:{ 'Content-Type':'application/json', 'X-CSRFToken': csrfToken } })
+      .then(r => { if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+      .then(data => { if(data.success && data.checkout_url){ setTimeout(()=>{ window.location.href = data.checkout_url; }, 600); } else { alert('Error: '+(data.error||'Failed to create payment session')); placeOrderBtn.textContent = originalText; placeOrderBtn.disabled = false; } })
+      .catch(()=>{ alert('An error occurred while processing your payment. Please try again.'); placeOrderBtn.textContent = originalText; placeOrderBtn.disabled = false; });
+}
+</script>
+{% endblock %}
+
 <!DOCTYPE html>
 <html>
 <head>

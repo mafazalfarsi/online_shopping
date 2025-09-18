@@ -1,39 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Order Confirmation - TechMart</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #fafafa;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            overflow-x: hidden;
-            color: #1a1a1a;
-            line-height: 1.6;
-        }
-        
-        .navbar {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            padding: 20px 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            padding: 0 40px;
-        }
+{% extends 'shop/base.html' %}
+
+{% block title %}Order Confirmation - TechMart{% endblock %}
+
+{% block extra_css %}
+<style>
+        body { background:#000000; color:white; }
+        .navbar { background: rgba(0,0,0,0.95); position: fixed; top:0; width:100%; z-index:1000; padding:20px 0; box-shadow:0 4px 20px rgba(0,0,0,.3); }
+        .nav-container { max-width:1400px; margin:0 auto; display:flex; justify-content:center; align-items:center; padding:0 40px; }
+        .brand-logo { display:flex; align-items:center; text-decoration:none; color:inherit; }
+        .logo-text { display:flex; flex-direction:column; align-items:center; }
+        .logo-main { font-size:1.2em; font-weight:800; color:#fff; letter-spacing:2px; line-height:.9; }
+        .logo-sub { font-size:0.9em; font-weight:600; color:#fff; letter-spacing:1px; margin-top:-3px; }
         
         .brand {
             display: flex;
@@ -117,16 +94,7 @@
             box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
         }
         
-        .main-container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 40px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            text-align: center;
-            border: 1px solid #f0f0f0;
-        }
+        .main-container { max-width: 800px; margin: 120px auto 50px; padding:40px; background: rgba(255,255,255,0.95); border-radius:16px; box-shadow:0 20px 40px rgba(0,0,0,.2); text-align:center; border:2px solid rgba(81,34,50,.3); }
         
         .success-icon {
             width: 80px;
@@ -141,29 +109,11 @@
             color: white;
         }
         
-        .confirmation-title {
-            font-size: 2.5em;
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 20px;
-            letter-spacing: -0.02em;
-        }
+        .confirmation-title { font-size:2.5em; font-weight:800; color:#000; margin-bottom:20px; letter-spacing:-.02em; }
         
-        .confirmation-message {
-            font-size: 1.2em;
-            color: #666;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
+        .confirmation-message { font-size:1.2em; color:#333; margin-bottom:40px; line-height:1.6; }
         
-        .order-details {
-            background: #fafafa;
-            border-radius: 12px;
-            padding: 30px;
-            margin: 30px 0;
-            text-align: left;
-            border: 1px solid #f0f0f0;
-        }
+        .order-details { background: rgba(81,34,50,0.08); border-radius:12px; padding:30px; margin:30px 0; text-align:left; border:2px solid rgba(81,34,50,0.3); }
         
         .order-details h3 {
             color: #1a1a1a;
@@ -207,11 +157,7 @@
             font-weight: 600;
         }
         
-        .total-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px solid #1a1a1a;
-        }
+        .total-section { margin-top:30px; padding-top:20px; border-top:2px solid rgba(81,34,50,.25); }
         
         .total-row {
             display: flex;
@@ -268,14 +214,27 @@
             box-shadow: 0 8px 25px rgba(108,117,125,0.3);
         }
         
-        .payment-method {
-            background: #e8f5e8;
-            border: 1px solid #28a745;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #155724;
-        }
+        .payment-method { background:#e8f5e8; border:1px solid #28a745; border-radius:8px; padding:15px; margin:20px 0; color:#155724; }
+
+        /* Animated payment badge (auto-animating version of user's hover widget) */
+        .pay-anim-container { background-color:#ffffff; display:flex; width:460px; height:120px; position:relative; border-radius:6px; transition:.3s ease-in-out; margin:0 auto 24px; }
+        .pay-left-side { background-color:#5de2a3; width:100%; height:120px; border-radius:4px; position:relative; display:flex; justify-content:center; align-items:center; cursor:default; transition:.3s; flex-shrink:0; overflow:hidden; }
+        .pay-right-side { width:0; display:flex; align-items:center; overflow:hidden; justify-content:space-between; white-space:nowrap; }
+        .pay-arrow { width:20px; height:20px; margin-right:20px; }
+        .pay-new { font-size:23px; font-family:"Lexend Deca", sans-serif; margin-left:20px; }
+        .pay-card { width:70px; height:46px; background-color:#c7ffbc; border-radius:6px; position:absolute; display:flex; z-index:10; flex-direction:column; align-items:center; box-shadow:9px 9px 9px -2px rgba(77,200,143,.72); animation: slide-top 1.2s cubic-bezier(0.645,0.045,0.355,1) both; }
+        .pay-card-line { width:65px; height:13px; background-color:#80ea69; border-radius:2px; margin-top:7px; }
+        .pay-buttons { width:8px; height:8px; background-color:#379e1f; box-shadow:0 -10px 0 0 #26850e, 0 10px 0 0 #56be3e; border-radius:50%; margin-top:5px; transform:rotate(90deg); margin:10px 0 0 -30px; }
+        .pay-post { width:63px; height:75px; background-color:#dddde0; position:absolute; z-index:11; bottom:10px; top:120px; border-radius:6px; overflow:hidden; animation: slide-post 1s cubic-bezier(0.165,0.84,0.44,1) both; }
+        .pay-post-line { width:47px; height:9px; background-color:#545354; position:absolute; border-radius:0 0 3px 3px; right:8px; top:8px; }
+        .pay-post-line:before { content:""; position:absolute; width:47px; height:9px; background-color:#757375; top:-8px; }
+        .pay-screen { width:47px; height:23px; background-color:#ffffff; position:absolute; top:22px; right:8px; border-radius:3px; }
+        .pay-numbers { width:12px; height:12px; background-color:#838183; box-shadow:0 -18px 0 0 #838183, 0 18px 0 0 #838183; border-radius:2px; position:absolute; transform:rotate(90deg); left:25px; top:52px; }
+        .pay-numbers-line2 { width:12px; height:12px; background-color:#aaa9ab; box-shadow:0 -18px 0 0 #aaa9ab, 0 18px 0 0 #aaa9ab; border-radius:2px; position:absolute; transform:rotate(90deg); left:25px; top:68px; }
+        .pay-dollar { position:absolute; font-size:16px; font-family:"Lexend Deca", sans-serif; width:100%; left:0; top:0; color:#4b953b; text-align:center; animation: fade-in-fwd .3s 1s backwards; }
+        @keyframes slide-top { 0%{ transform:translateY(0);} 50%{ transform:translateY(-70px) rotate(90deg);} 60%{ transform:translateY(-70px) rotate(90deg);} 100%{ transform:translateY(-8px) rotate(90deg);} }
+        @keyframes slide-post { 50%{ transform:translateY(0);} 100%{ transform:translateY(-70px);} }
+        @keyframes fade-in-fwd { 0%{ opacity:0; transform:translateY(-5px);} 100%{ opacity:1; transform:translateY(0);} }
         
         @media (max-width: 768px) {
             .main-container {
@@ -298,27 +257,39 @@
             }
         }
     </style>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <nav class="navbar">
         <div class="nav-container">
-            <div class="brand">
-                <a href="{% url 'home' %}" class="brand-logo">TechMart</a>
-            </div>
-            <div class="nav-actions">
-                <a href="{% url 'home' %}" class="home-btn">🏠</a>
-                {% if user.is_authenticated or request.session.is_logged_in %}
-                    <a href="{% url 'order_history' %}" class="home-btn">👤</a>
-                    <a href="{% url 'logout' %}" class="nav-btn logout-btn">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="nav-btn">Login</a>
-                {% endif %}
-            </div>
+            <a href="{% url 'home' %}" class="brand-logo">
+                <div class="logo-text">
+                    <span class="logo-main">TECH</span>
+                    <span class="logo-sub">MART</span>
+                </div>
+            </a>
         </div>
     </nav>
 
     <div class="main-container">
-        <div class="success-icon">✓</div>
+        <div class="pay-anim-container">
+            <div class="pay-left-side">
+                <div class="pay-card">
+                    <div class="pay-card-line"></div>
+                    <div class="pay-buttons"></div>
+                </div>
+                <div class="pay-post">
+                    <div class="pay-post-line"></div>
+                    <div class="pay-screen"><div class="pay-dollar">$</div></div>
+                    <div class="pay-numbers"></div>
+                    <div class="pay-numbers-line2"></div>
+                </div>
+            </div>
+            <div class="pay-right-side">
+                <div class="pay-new">New Transaction</div>
+                <svg viewBox="0 0 451.846 451.847" height="512" width="512" xmlns="http://www.w3.org/2000/svg" class="pay-arrow"><path fill="#cfcfcf" d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"></path></svg>
+            </div>
+        </div>
         <h1 class="confirmation-title">Payment Successful!</h1>
         <p class="confirmation-message">
             Thank you for your order! Your payment has been processed successfully and your order has been placed.
@@ -394,5 +365,4 @@
             <a href="{% url 'order_history' %}" class="btn btn-secondary">View Orders</a>
         </div>
     </div>
-</body>
-</html> 
+{% endblock %}

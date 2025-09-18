@@ -22,14 +22,14 @@
         width: 400px;
         height: 120px;
         background: linear-gradient(45deg, 
-        rgba(65, 0, 22, 0.8), 
-        rgba(99, 23, 42, 0.9), 
-        rgba(61, 0, 19, 0.8)
+        rgba(81, 34, 50, 0.8), 
+        rgba(81, 34, 50, 0.9), 
+        rgba(81, 34, 50, 0.8)
         );
         border-radius: 60px;
         box-shadow: 
-            0 0 30px rgba(139, 0, 139, 0.6),
-            0 0 60px rgba(220, 20, 60, 0.4),
+            0 0 30px rgba(81, 34, 50, 0.6),
+            0 0 60px rgba(81, 34, 50, 0.4),
             inset 0 0 20px rgba(255, 255, 255, 0.1);
         opacity: 0.85;
         transform: none;
@@ -39,10 +39,10 @@
 
     .login-container {
         display: flex;
-        align-items: flex-start; /* anchor from top so panel sits higher */
+        align-items: flex-start; /* align to top */
         justify-content: center;
-        min-height: calc(100vh - 80px);
-        padding: 140px 16px 24px; /* push it up between the red shapes */
+        min-height: 100vh;
+        padding: 120px 20px 20px; /* move panel down a bit */
         background: transparent;
         position: relative;
         z-index: 1; /* keep content above beams */
@@ -54,9 +54,9 @@
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         overflow: visible;
         width: 100%;
-        max-width: 1300px;
+        max-width: 500px;
         backdrop-filter: blur(10px);
-        border: 2px solid rgb(78, 46, 56);
+        border: 2px solid rgba(81, 34, 50, 0.3);
         position: relative;
         transition: all 0.3s ease;
         
@@ -65,7 +65,7 @@
         --glow-y: 50%;
         --glow-intensity: 0;
         --glow-radius: 160px;
-        --purple-glow: rgb(99, 0, 33);
+        --purple-glow: rgb(81, 34, 50);
         --outer-intensity: 0;
     }
 
@@ -76,9 +76,9 @@
         inset: -44px;
         border-radius: calc(20px + 44px);
         background: radial-gradient(240px circle at var(--glow-x) var(--glow-y),
-            rgba(220, 40, 100, 0.22) 0%,
-            rgba(220, 40, 100, 0.12) 40%,
-            rgba(220, 40, 100, 0.04) 70%,
+            rgba(81, 34, 50, 0.22) 0%,
+            rgba(81, 34, 50, 0.12) 40%,
+            rgba(81, 34, 50, 0.04) 70%,
             transparent 80%);
         filter: blur(12px);
         pointer-events: none;
@@ -95,8 +95,8 @@
         inset: 0;
         padding: 4px;
         background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
-            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.35)) 0%,
-            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.2)) 30%,
+            rgba(81, 34, 50, calc(var(--glow-intensity) * 0.35)) 0%,
+            rgba(81, 34, 50, calc(var(--glow-intensity) * 0.2)) 30%,
             transparent 60%);
         border-radius: inherit;
         mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -116,7 +116,7 @@
     }
     
     .login-card:hover {
-        box-shadow: 0 4px 20px rgba(82, 9, 27, 0.4), 0 0 30px var(--purple-glow);
+        box-shadow: 0 4px 20px rgba(81, 34, 50, 0.4), 0 0 30px var(--purple-glow);
     }
     
     .login-header {
@@ -140,28 +140,14 @@
         margin: 0;
     }
     
-    /* Two-column content area */
+    /* Single column content area */
     .login-content {
-        display: flex;
-        gap: 24px;
         padding: 24px;
-    }
-
-    .login-left {
-        flex: 1 1 50%;
-        min-width: 360px;
-    }
-
-    .login-right {
-        flex: 1 1 50%;
-        min-height: 100%;
-        border-left: 1px solid rgba(255, 255, 255, 0.06);
-        /* Placeholder: you can add your content here later */
     }
     
     .back-link {
         display: inline-block;
-        color: rgb(133, 23, 60);
+        color: #512232;
         text-decoration: none;
         margin-bottom: 20px;
         font-weight: 500;
@@ -169,7 +155,7 @@
     }
     
     .back-link:hover {
-        color:rgb(194, 54, 101);
+        color: #3a1a24;
         text-decoration: underline;
     }
     
@@ -197,14 +183,14 @@
     }
     
     .form-control:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        border-color: #512232;
+        box-shadow: 0 0 0 3px rgba(81, 34, 50, 0.1);
     }
     
     .login-btn {
         width: 100%;
         padding: 14px 24px;
-        background: linear-gradient(135deg,rgb(141, 35, 70) 0%, rgb(75, 6, 29) 100%);
+        background: linear-gradient(135deg, #512232 0%, #3a1a24 100%);
         color: white;
         border: none;
         border-radius: 10px;
@@ -219,20 +205,23 @@
         gap: 10px;
     }
     
-    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(252, 94, 146, 0.3); }
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(81, 34, 50, 0.3); }
     
     .signup-link { text-align: left; color: rgba(255, 255, 255, 0.8); font-size: 0.9em; }
-    .signup-link a { color:rgb(133, 23, 60); text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+    .signup-link a { color: #512232; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
     .signup-link a:hover { text-decoration: underline; }
 
     .error-message { background: #ff6b6b; color: white; padding: 12px; border-radius: 10px; margin-bottom: 16px; text-align: center; font-weight: 500; }
     .success-message { background: #51cf66; color: white; padding: 12px; border-radius: 10px; margin-bottom: 16px; text-align: center; font-weight: 500; }
     
-    @media (max-width: 900px) {
-        .login-content { flex-direction: column; }
-        .login-right { border-left: none; min-height: 0; }
-        .login-left { min-width: 0; }
-        .login-container { align-items: center; padding-top: 100px; }
+    /* Hide footer on login page */
+    .site-footer {
+        display: none !important;
+    }
+
+    @media (max-width: 600px) {
+        .login-card { max-width: 90%; }
+        .login-container { padding: 10px; }
     }
 </style>
 {% endblock %}
@@ -247,33 +236,29 @@
         </div>
 
         <div class="login-content">
-            <div class="login-left">
-                <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
+            <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
 
-                {% if error_message %}
-                <div class="error-message">{{ error_message }}</div>
-                {% endif %}
-                {% if success_message %}
-                <div class="success-message">{{ success_message }}</div>
-                {% endif %}
+            {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+            {% endif %}
+            {% if success_message %}
+            <div class="success-message">{{ success_message }}</div>
+            {% endif %}
 
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
-                    </div>
-                    <button type="submit" class="login-btn">Sign In</button>
-                </form>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
 
-                <div class="signup-link">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></div>
-            </div>
-
-            <div class="login-right"><!-- Left empty intentionally; add your content later --></div>
+            <div class="signup-link">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></div>
         </div>
     </div>
 </div>
@@ -283,7 +268,7 @@
 <script>
 // Global spotlight and glow tracking system (exact same as category page)
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
-const DEFAULT_GLOW_COLOR = "138, 20, 48";
+const DEFAULT_GLOW_COLOR = "81, 34, 50";
 
 const calculateSpotlightValues = (radius) => ({ proximity: radius * 0.5, fadeDistance: radius * 0.75 });
 

@@ -13,7 +13,7 @@
         <div class="hero-overlay"></div>
     </div>
     <div class="hero-content">
-        <h1 class="hero-title">Your World, From New Heights</h1>
+        <h1 class="hero-title"><span class="hero-type"></span><span class="typing-cursor"></span></h1>
         <p class="hero-subtitle">Advanced technologies for modern living with full service support</p>
         <div class="hero-cta">
                     <a href="{% url 'category_list' %}" class="cta-button">Explore Products</a>
@@ -115,10 +115,10 @@
     }
 
     body {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         line-height: 1.6;
         color: white;
-        background: #000;
+        background: #133743;
     }
 
     .container {
@@ -177,6 +177,10 @@
         text-shadow: 2px 2px 4px rgba(51, 51, 51, 0.7);
         line-height: 1.2;
     }
+
+    .hero-title { display: inline; }
+    .typing-cursor { display:inline-block; width:2px; height:1em; background:#fff; margin-left:4px; animation: blink 1s infinite; vertical-align: baseline; }
+    @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 
     .hero-subtitle {
         font-size: 1.3rem;
@@ -283,7 +287,7 @@
         content: "";
         width: 20%;
         height: 20%;
-        background-color: rgba(99, 14, 39, 0.25);
+        background-color: rgba(148, 41, 77, 0.25);
         transition: all 0.5s;
         z-index: 0;
     }
@@ -293,25 +297,8 @@
     .feature-card:hover::after { width:100%; height:100%; border-radius:12px; }
 
     /* Glow border layer */
-    .feature-card .glow-layer {
-        position: absolute;
-        inset: 0;
-        padding: 6px;
-        border-radius: 12px;
-        pointer-events: none;
-        z-index: 2;
-        background: radial-gradient(var(--glow-radius) circle at var(--glow-x) var(--glow-y),
-            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.35)) 0%,
-            rgba(220, 40, 100, calc(var(--glow-intensity) * 0.2)) 30%,
-            transparent 60%);
-        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-        opacity: 0;
-        transition: opacity .3s ease;
-    }
-    .feature-card:hover .glow-layer { opacity: 1; }
+    /* Removed border glow */
+    .feature-card .glow-layer { display: none !important; }
 
     .feature-icon { font-size:3rem; margin-bottom:20px; }
 
@@ -369,8 +356,8 @@
 
     .product-description { color: #666; font-size: 0.95em; line-height: 1.5; margin: 0 0 20px 0; }
 
-    .add-to-cart-btn { width: 100%; padding: 12px; background: linear-gradient(135deg,rgb(0, 0, 0) 0%,rgb(65, 65, 65) 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; min-height: 44px; display: flex; align-items: center; justify-content: center; }
-    .add-to-cart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.3); }
+    .add-to-cart-btn { width: 100%; padding: 12px; background: linear-gradient(135deg,rgb(81, 34, 50) 0%,rgb(65, 65, 65) 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .add-to-cart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(81, 34, 50,0.3); }
 
     .no-products {
         text-align: center;
@@ -516,20 +503,21 @@ document.addEventListener('DOMContentLoaded', function() {
     initScrollReveal();
 
     // Border glow mechanic for feature cards
-    const cards = document.querySelectorAll('.feature-card');
-    cards.forEach((card) => {
-        const onMove = (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            card.style.setProperty('--glow-x', `${x}%`);
-            card.style.setProperty('--glow-y', `${y}%`);
-            card.style.setProperty('--glow-intensity', '1');
-        };
-        const onLeave = () => card.style.setProperty('--glow-intensity', '0');
-        card.addEventListener('mousemove', onMove);
-        card.addEventListener('mouseleave', onLeave);
-    });
+    // Removed glow listeners
+    // Typing animation for hero title
+    const targetEl = document.querySelector('.hero-type');
+    const cursorEl = document.querySelector('.typing-cursor');
+    if (targetEl) {
+        const full = 'Your World, From New Heights';
+        let idx = 0;
+        (function type() {
+            if (idx < full.length) {
+                targetEl.textContent = full.substring(0, idx + 1);
+                idx++;
+                setTimeout(type, 70);
+            }
+        })();
+    }
 });
 </script>
 {% endblock %} 
