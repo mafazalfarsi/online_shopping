@@ -34,6 +34,11 @@ CSRF_TRUSTED_ORIGINS = [
 # Make sure ALLOWED_HOSTS includes your server IP
 ALLOWED_HOSTS = ["185.226.124.30", "localhost", "127.0.0.1", "0.0.0.0"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://185.226.124.30:8080",
+    "https://185.226.124.30:8080",
+]
+
 # Base URL for the application
 BASE_URL = 'http://localhost:8000'
 
