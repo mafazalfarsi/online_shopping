@@ -25,7 +25,14 @@ SECRET_KEY = 'django-insecure-qeq%0#_16_m+zf&mpq38fl&!0hqi5f9ccbva&v+t00&+i#))m!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+# Add these lines to fix the CSRF error
+CSRF_TRUSTED_ORIGINS = [
+    "http://185.226.124.30:8080",
+    "https://185.226.124.30:8080",
+]
+
+# Make sure ALLOWED_HOSTS includes your server IP
+ALLOWED_HOSTS = ["185.226.124.30", "localhost", "127.0.0.1", "0.0.0.0"]
 
 # Base URL for the application
 BASE_URL = 'http://localhost:8000'
@@ -136,3 +143,4 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
